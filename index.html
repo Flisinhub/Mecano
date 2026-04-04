@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego de Mecanografía</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <div class="background-fallback"></div>
+
+    <video
+      id="background-video"
+      class="background-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+    >
+      <source src="assets/animated_bg.mp4" type="video/mp4" />
+      Tu navegador no soporta vídeo HTML5.
+    </video>
+
+    <div class="overlay">
+      <div class="game-layout">
+        <main class="play-area">
+          <section class="word-panel">
+            <div class="label">Texto:</div>
+            <div id="target-word" class="target-word unified-text"></div>
+            <div id="feedback-message" class="feedback-message"></div>
+          </section>
+        </main>
+
+        <aside class="side-panel">
+          <div class="stat-card">Nivel <span id="level">1</span></div>
+          <div class="stat-card">Errores <span id="errors">0</span></div>
+          <div class="stat-card">Palabras <span id="words-count">0</span> / <span id="words-goal">6</span></div>
+          <div class="stat-card">Precisión <span id="accuracy">100</span>%</div>
+          <div class="stat-card">APM <span id="apm">0</span></div>
+
+          <button id="settings-btn" class="settings-btn side-settings-btn" aria-label="Abrir opciones">
+            ⚙️
+          </button>
+        </aside>
+      </div>
+
+      <section class="keyboard" aria-label="Teclado en pantalla">
+        <div class="keyboard-row">
+          <div class="key" data-key="q">Q</div>
+          <div class="key" data-key="w">W</div>
+          <div class="key" data-key="e">E</div>
+          <div class="key" data-key="r">R</div>
+          <div class="key" data-key="t">T</div>
+          <div class="key" data-key="y">Y</div>
+          <div class="key" data-key="u">U</div>
+          <div class="key" data-key="i">I</div>
+          <div class="key" data-key="o">O</div>
+          <div class="key" data-key="p">P</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key" data-key="a">A</div>
+          <div class="key" data-key="s">S</div>
+          <div class="key" data-key="d">D</div>
+          <div class="key" data-key="f">F</div>
+          <div class="key" data-key="g">G</div>
+          <div class="key" data-key="h">H</div>
+          <div class="key" data-key="j">J</div>
+          <div class="key" data-key="k">K</div>
+          <div class="key" data-key="l">L</div>
+          <div class="key" data-key="ñ">Ñ</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key" data-key="z">Z</div>
+          <div class="key" data-key="x">X</div>
+          <div class="key" data-key="c">C</div>
+          <div class="key" data-key="v">V</div>
+          <div class="key" data-key="b">B</div>
+          <div class="key" data-key="n">N</div>
+          <div class="key" data-key="m">M</div>
+        </div>
+      </section>
+
+      <!-- Pantalla inicial -->
+      <div id="start-screen" class="start-screen">
+        <div class="start-box">
+          <h1>Juego de Mecanografía</h1>
+          <p>Elige una dificultad para empezar.</p>
+
+          <label for="start-difficulty-select">Dificultad</label>
+          <select id="start-difficulty-select" class="difficulty-select">
+            <option value="muy-facil">Muy fácil</option>
+            <option value="facil">Fácil</option>
+            <option value="normal" selected>Normal</option>
+            <option value="dificil">Difícil</option>
+            <option value="muy-dificil">Muy difícil</option>
+            <option value="absurdo">Absurdo</option>
+          </select>
+
+          <div id="start-difficulty-description" class="difficulty-description"></div>
+
+          <button id="start-game-btn" class="start-game-btn">Empezar</button>
+        </div>
+      </div>
+
+      <!-- Panel de opciones -->
+      <div id="settings-panel" class="settings-panel hidden">
+        <div class="settings-box">
+          <div class="settings-header">
+            <h2>Opciones</h2>
+            <button id="close-settings-btn" class="close-settings-btn">✖</button>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-row">
+              <span>Sonido</span>
+              <button id="sound-toggle" class="option-btn">ON</button>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-row">
+              <span>Animación de fondo</span>
+              <button id="animation-toggle" class="option-btn">ON</button>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <label for="difficulty-select">Dificultad</label>
+            <select id="difficulty-select" class="difficulty-select">
+              <option value="muy-facil">Muy fácil</option>
+              <option value="facil">Fácil</option>
+              <option value="normal" selected>Normal</option>
+              <option value="dificil">Difícil</option>
+              <option value="muy-dificil">Muy difícil</option>
+              <option value="absurdo">Absurdo</option>
+            </select>
+
+            <div id="difficulty-description" class="difficulty-description"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nivel completado -->
+      <div id="level-complete" class="level-complete hidden" aria-live="polite">
+        <div class="level-complete-box">
+          <h2 id="level-complete-title">¡Nivel completado!</h2>
+          <p>
+            Has escrito
+            <span id="level-complete-count">0</span>
+            textos correctamente.
+          </p>
+          <button id="next-level-btn">Seguir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
