@@ -138,22 +138,18 @@ function handleVideoFallback() {
 }
 
 function getDifficultyDescription(value) {
-  switch (value) {
-    case "muy-facil":
-      return "Palabras infantiles muy cortas. Ideal para empezar sin presión y familiarizarse con el teclado poco a poco.";
-    case "facil":
-      return "Palabras sencillas y frases cortas sobre objetos, animales, familia y cole. Pensado para peques que ya reconocen mejor las letras.";
-    case "normal":
-      return "Mezcla equilibrada de palabras comunes y frases simples. Buen punto de partida si ya hay algo de soltura escribiendo.";
-    case "dificil":
-      return "Frases completas con más longitud y más lectura. Requiere mantener atención durante más tiempo.";
-    case "muy-dificil":
-      return "Textos largos y frases más exigentes. Ideal para practicar ritmo, concentración y resistencia al escribir.";
-    case "absurdo":
-      return "Modo reto. Textos largos, raros o exagerados para quien quiera una experiencia caótica y divertida.";
-    default:
-      return "";
-  }
+  const descriptions = {
+    "1-infantil": "Palabras simples de 3-5 letras. Perfecto para comenzar sin presión.",
+    "2-basico": "Palabras más largas de 5-8 letras con acentos. Construye familiaridad.",
+    "3-principiante": "Frases cortas y simples para ganar seguridad escribiendo.",
+    "4-intermedio": "Frases medianas con puntuación variada. Requiere más concentración.",
+    "5-avanzado": "Textos medianos que requieren mantener ritmo y enfoque.",
+    "6-experto": "Textos largos con estructura compleja. Para practicantes experimentados.",
+    "7-maestria": "Textos muy largos para dominio completo del teclado.",
+    "8-absurdo": "Desafío extremo. Textos alocados y extravagantes. ¡Bienvenido a la locura!"
+  };
+  
+  return descriptions[value] || "";
 }
 
 function updateDifficultyDescriptions() {
@@ -161,56 +157,35 @@ function updateDifficultyDescriptions() {
   startDifficultyDescription.textContent = getDifficultyDescription(startDifficultySelect.value);
 }
 
-function getDifficultyMultiplier() {
-  switch (difficulty) {
-    case "muy-facil":
-      return 0.7;
-    case "facil":
-      return 0.85;
-    case "normal":
-      return 1;
-    case "dificil":
-      return 1.2;
-    case "muy-dificil":
-      return 1.4;
-    case "absurdo":
-      return 1.8;
-    default:
-      return 1;
-  }
-}
-
-function getWordsGoalForLevel(currentLevel) {
-  let baseGoal;
-
-  if (currentLevel === 1) baseGoal = 6;
-  else if (currentLevel === 2) baseGoal = 8;
-  else if (currentLevel === 3) baseGoal = 10;
-  else baseGoal = 12;
-
-  return Math.max(4, Math.round(baseGoal * getDifficultyMultiplier()));
+function getWordsGoalForLevel() {
+  // Base: 6 palabras
+  const baseGoal = 6;
+  
+  // Multiplicador según nivel (ya no hay sub-niveles)
+  const multipliers = {
+    "1-infantil": 0.8,
+    "2-basico": 0.9,
+    "3-principiante": 1.0,
+    "4-intermedio": 1.1,
+    "5-avanzado": 1.2,
+    "6-experto": 1.3,
+    "7-maestria": 1.4,
+    "8-absurdo": 1.5
+  };
+  
+  const multiplier = multipliers[difficulty] || 1.0;
+  return Math.max(4, Math.round(baseGoal * multiplier));
 }
 
 function getCurrentWordList() {
-  const difficultyPack = WORD_LIST[difficulty];
-
-  if (!difficultyPack) {
-    return WORD_LIST["normal"].level1;
+  // Ahora difficulty es directamente el nivel (ej: "1-infantil", "2-basico", etc)
+  const wordList = WORD_LIST[difficulty];
+  
+  if (!wordList || wordList.length === 0) {
+    return WORD_LIST["5-avanzado"];
   }
-
-  if (level === 1 && difficultyPack.level1?.length) {
-    return difficultyPack.level1;
-  }
-
-  if (level === 2 && difficultyPack.level2?.length) {
-    return difficultyPack.level2;
-  }
-
-  if (level >= 3 && difficultyPack.level3?.length) {
-    return difficultyPack.level3;
-  }
-
-  return WORD_LIST["normal"].level1;
+  
+  return wordList;
 }
 
 function pickRandomWord() {
@@ -654,7 +629,7 @@ function hideLevelCompleteAndNext() {
   errors = 0;
   totalKeystrokes = 0;
   correctKeystrokes = 0;
-  wordsGoal = getWordsGoalForLevel(level);
+  wordsGoal = getWordsGoalForLevel();
 
   startAPMTimer();
   updateStats();
@@ -677,7 +652,7 @@ function applyDifficulty() {
     startAPMTimer();
   }
   
-  wordsGoal = getWordsGoalForLevel(level);
+  wordsGoal = getWordsGoalForLevel();
   updateStats();
   updateDifficultyDescriptions();
   
@@ -701,7 +676,7 @@ function startGame() {
   errors = 0;
   totalKeystrokes = 0;
   correctKeystrokes = 0;
-  wordsGoal = getWordsGoalForLevel(level);
+  wordsGoal = getWordsGoalForLevel();
 
   gameStarted = true;
   isPaused = false;
