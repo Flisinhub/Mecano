@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juego de Mecanografía</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <div class="background-fallback"></div>
+
+    <video
+      id="background-video"
+      class="background-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+    >
+      <source src="assets/animated_bg.mp4" type="video/mp4" />
+      Tu navegador no soporta vídeo HTML5.
+    </video>
+
+    <button id="settings-btn" class="settings-btn top-right-settings" aria-label="Abrir opciones">⚙️</button>
+
+    <div class="overlay">
+      <div class="game-layout">
+        <main class="play-area">
+          <section class="word-panel">
+            <div class="label">Texto:</div>
+            <div id="target-word" class="target-word unified-text"></div>
+            <div id="feedback-message" class="feedback-message"></div>
+          </section>
+        </main>
+
+        <aside class="side-panel">
+          <div class="stats-container">
+            <div class="stat-card">Nivel <span id="level">1</span></div>
+            <div class="stat-card">Errores <span id="errors">0</span></div>
+            <div class="stat-card">Palabras <span id="words-count">0</span> / <span id="words-goal">6</span></div>
+            <div class="stat-card">Precisión <span id="accuracy">100</span>%</div>
+            <div class="stat-card">APM <span id="apm">0</span></div>
+          </div>
+        </aside>
+      </div>
+
+      <section class="keyboard" aria-label="Teclado en pantalla">
+        <div class="keyboard-row">
+          <div class="key" data-key="1" aria-label="1 y exclamación">
+            <div class="key-label">
+              <span class="key-label-primary">1</span>
+              <span class="key-label-secondary">!</span>
+            </div>
+          </div>
+          <div class="key" data-key="2" aria-label="2 y comillas">
+            <div class="key-label">
+              <span class="key-label-primary">2</span>
+              <span class="key-label-secondary">"</span>
+            </div>
+          </div>
+          <div class="key" data-key="3" aria-label="3 y punto medio">
+            <div class="key-label">
+              <span class="key-label-primary">3</span>
+              <span class="key-label-secondary">·</span>
+            </div>
+          </div>
+          <div class="key" data-key="4" aria-label="4 y dólar">
+            <div class="key-label">
+              <span class="key-label-primary">4</span>
+              <span class="key-label-secondary">$</span>
+            </div>
+          </div>
+          <div class="key" data-key="5" aria-label="5 y porcentaje">
+            <div class="key-label">
+              <span class="key-label-primary">5</span>
+              <span class="key-label-secondary">%</span>
+            </div>
+          </div>
+          <div class="key" data-key="6" aria-label="6 y ampersand">
+            <div class="key-label">
+              <span class="key-label-primary">6</span>
+              <span class="key-label-secondary">&amp;</span>
+            </div>
+          </div>
+          <div class="key" data-key="7" aria-label="7 y barra">
+            <div class="key-label">
+              <span class="key-label-primary">7</span>
+              <span class="key-label-secondary">/</span>
+            </div>
+          </div>
+          <div class="key" data-key="8" aria-label="8 y paréntesis abierto">
+            <div class="key-label">
+              <span class="key-label-primary">8</span>
+              <span class="key-label-secondary">(</span>
+            </div>
+          </div>
+          <div class="key" data-key="9" aria-label="9 y paréntesis cerrado">
+            <div class="key-label">
+              <span class="key-label-primary">9</span>
+              <span class="key-label-secondary">)</span>
+            </div>
+          </div>
+          <div class="key" data-key="0" aria-label="0 y igual">
+            <div class="key-label">
+              <span class="key-label-primary">0</span>
+              <span class="key-label-secondary">=</span>
+            </div>
+          </div>
+          <div class="key" data-key="¿">¿</div>
+          <div class="key" data-key="?">?</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key" data-key="q">Q</div>
+          <div class="key" data-key="w">W</div>
+          <div class="key" data-key="e">E</div>
+          <div class="key" data-key="r">R</div>
+          <div class="key" data-key="t">T</div>
+          <div class="key" data-key="y">Y</div>
+          <div class="key" data-key="u">U</div>
+          <div class="key" data-key="i">I</div>
+          <div class="key" data-key="o">O</div>
+          <div class="key" data-key="p">P</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key" data-key="a">A</div>
+          <div class="key" data-key="s">S</div>
+          <div class="key" data-key="d">D</div>
+          <div class="key" data-key="f">F</div>
+          <div class="key" data-key="g">G</div>
+          <div class="key" data-key="h">H</div>
+          <div class="key" data-key="j">J</div>
+          <div class="key" data-key="k">K</div>
+          <div class="key" data-key="l">L</div>
+          <div class="key" data-key="ñ">Ñ</div>
+          <div class="key key-accent" data-key="´" aria-label="acento y diéresis">
+            <div class="key-label">
+              <span class="key-label-primary">´</span>
+              <span class="key-label-secondary">¨</span>
+            </div>
+          </div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key key-shift" data-key="Shift">Mayús</div>
+          <div class="key" data-key="z">Z</div>
+          <div class="key" data-key="x">X</div>
+          <div class="key" data-key="c">C</div>
+          <div class="key" data-key="v">V</div>
+          <div class="key" data-key="b">B</div>
+          <div class="key" data-key="n">N</div>
+          <div class="key" data-key="m">M</div>
+          <div class="key" data-key="," aria-label=", punto y coma">
+            <div class="key-label">
+              <span class="key-label-primary">,</span>
+              <span class="key-label-secondary">;</span>
+            </div>
+          </div>
+          <div class="key" data-key="." aria-label="punto y dos puntos">
+            <div class="key-label">
+              <span class="key-label-primary">.</span>
+              <span class="key-label-secondary">:</span>
+            </div>
+          </div>
+          <div class="key" data-key="-">- _</div>
+          <div class="key key-enter" data-key="Enter">Intro</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key key-spacebar" data-key=" ">Espacio</div>
+        </div>
+      </section>
+
+      <!-- Pantalla inicial -->
+      <div id="start-screen" class="start-screen">
+        <div class="start-box">
+          <h1>Juego de Mecanografía</h1>
+          <p>Elige una dificultad para empezar.</p>
+
+          <label for="start-difficulty-select">Dificultad</label>
+          <select id="start-difficulty-select" class="difficulty-select">
+            <option value="muy-facil">Muy fácil</option>
+            <option value="facil">Fácil</option>
+            <option value="normal" selected>Normal</option>
+            <option value="dificil">Difícil</option>
+            <option value="muy-dificil">Muy difícil</option>
+            <option value="absurdo">Absurdo</option>
+          </select>
+
+          <div id="start-difficulty-description" class="difficulty-description"></div>
+
+          <label for="start-keyboard-select">Tipo de Teclado</label>
+          <select id="start-keyboard-select" class="difficulty-select">
+            <option value="infantil">Infantil (Solo letras)</option>
+            <option value="completo" selected>Completo (Todo)</option>
+          </select>
+
+          <button id="start-game-btn" class="start-game-btn">Empezar</button>
+        </div>
+      </div>
+
+      <!-- Panel de opciones -->
+      <div id="settings-panel" class="settings-panel hidden">
+        <div class="settings-box">
+          <div class="settings-header">
+            <h2>Opciones</h2>
+            <button id="close-settings-btn" class="close-settings-btn">✖</button>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-row">
+              <span>Sonido</span>
+              <button id="sound-toggle" class="option-btn">ON</button>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-row">
+              <span>Animación de fondo</span>
+              <button id="animation-toggle" class="option-btn">ON</button>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <label for="difficulty-select">Dificultad</label>
+            <select id="difficulty-select" class="difficulty-select">
+              <option value="muy-facil">Muy fácil</option>
+              <option value="facil">Fácil</option>
+              <option value="normal" selected>Normal</option>
+              <option value="dificil">Difícil</option>
+              <option value="muy-dificil">Muy difícil</option>
+              <option value="absurdo">Absurdo</option>
+            </select>
+
+            <div id="difficulty-description" class="difficulty-description"></div>
+          </div>
+
+          <div class="settings-group">
+            <label for="keyboard-select">Tipo de Teclado</label>
+            <select id="keyboard-select" class="difficulty-select">
+              <option value="infantil">Infantil (Solo letras)</option>
+              <option value="completo" selected>Completo (Todo)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nivel completado -->
+      <div id="level-complete" class="level-complete hidden" aria-live="polite">
+        <div class="level-complete-box">
+          <h2 id="level-complete-title">¡Nivel completado!</h2>
+          <p>
+            Has escrito
+            <span id="level-complete-count">0</span>
+            textos correctamente.
+          </p>
+          <button id="next-level-btn">Seguir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
