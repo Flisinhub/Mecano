@@ -568,8 +568,8 @@ function handleKeydown(event) {
     correctKeystrokes++;
     currentIndex++;
 
-    // Permitir flashear tanto letras, acentos y espacios
-    if (/^[a-zñáéíóúÁÉÍÓÚ!"·$%&/()\=]$/i.test(typedChar) || typedChar === " ") {
+    // Permitir flashear letras, puntuación, espacios y saltos de línea
+    if (/^[a-zñáéíóúÁÉÍÓÚ!"·$%&/()\=;:.,¿?]$/i.test(typedChar) || typedChar === " " || typedChar === "\n") {
       flashKey(typedChar, "key--hit");
     }
 
@@ -595,8 +595,8 @@ function handleKeydown(event) {
     errors++;
     showFeedback("Ups", "bad");
 
-    // Permitir flashear tanto letras, acentos y espacios
-    if (/^[a-zñáéíóúÁÉÍÓÚ]$/i.test(key) || key === " ") {
+    // Permitir flashear letras, puntuación, espacios y tecla Intro equivocada
+    if (/^[a-zñáéíóúÁÉÍÓÚ!"·$%&/()\=;:.,¿?]$/i.test(key) || key === " " || key === "Enter") {
       flashKey(key, "key--wrong");
     }
 
