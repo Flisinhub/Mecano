@@ -704,6 +704,56 @@ body {
   white-space: nowrap;
 }
 
+/* Badge de Apoyo Visual e Iconográfico para Niños de 6 a 8 años */
+.word-visual-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.28);
+  padding: 6px 18px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  animation: badgePopIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: all 0.25s ease;
+  user-select: none;
+}
+
+@keyframes badgePopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.word-visual-icon {
+  font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+  line-height: 1;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+  animation: iconWiggle 3s ease-in-out infinite alternate;
+}
+
+@keyframes iconWiggle {
+  0% { transform: rotate(-3deg) scale(1); }
+  100% { transform: rotate(3deg) scale(1.06); }
+}
+
+.word-visual-label {
+  font-family: var(--font-main);
+  font-size: clamp(0.95rem, 1.3vw, 1.25rem);
+  font-weight: 800;
+  color: #ffeaa7;
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
 .target-word {
   margin-top: 0;
   width: 100%;
@@ -1537,6 +1587,20 @@ body {
   box-shadow: 0 0 10px #ff6b6b;
 }
 
+/* Colchón de error suave anti-frustración para niños */
+.key--wrong-soft {
+  background: #ff7675 !important;
+  color: #fff !important;
+  box-shadow: 0 0 14px rgba(255, 118, 117, 0.75) !important;
+  animation: softWiggle 0.22s ease-in-out !important;
+}
+
+@keyframes softWiggle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+
 .key-spacebar {
   flex: 1;
   max-width: 440px;
@@ -1876,6 +1940,14 @@ body {
   line-height: 1.4;
 }
 
+.level-complete-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .level-complete-box button {
   padding: 14px 28px;
   font-size: 1.2rem;
@@ -1893,6 +1965,15 @@ body {
 .level-complete-box button:hover {
   transform: translateY(-2px) scale(1.04);
   box-shadow: 0 12px 28px rgba(238, 82, 83, 0.55);
+}
+
+#retry-level-btn {
+  background: linear-gradient(135deg, #0984e3, #00cec9);
+  box-shadow: 0 8px 20px rgba(9, 132, 227, 0.4);
+}
+
+#retry-level-btn:hover {
+  box-shadow: 0 12px 28px rgba(9, 132, 227, 0.55);
 }
 
 .hidden {

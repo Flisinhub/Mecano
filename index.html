@@ -33,7 +33,7 @@
           <span class="level-star-icon">⭐</span>
           <div class="level-texts">
             <span class="level-pill-tag">NIVEL <span id="level">1</span></span>
-            <span class="level-title-display" id="level-title-display">Bosque de Vocales</span>
+            <span class="level-title-display" id="level-title-display">Los Índices en Casa (F y J)</span>
           </div>
         </div>
 
@@ -42,7 +42,7 @@
             <span class="stat-badge-icon">🎯</span>
             <div class="stat-badge-content">
               <span class="stat-badge-label">Palabras</span>
-              <span class="stat-badge-val"><span id="words-count">0</span> / <span id="words-goal">6</span></span>
+              <span class="stat-badge-val"><span id="words-count">0</span> / <span id="words-goal">8</span></span>
             </div>
           </div>
 
@@ -107,6 +107,10 @@
         <!-- 📝 2. Área de escritura central (Div independiente) -->
         <div class="play-area" id="play-area" aria-label="Área de escritura central">
           <div class="word-panel" id="word-panel">
+            <div class="word-visual-badge" id="word-visual-badge" aria-hidden="true">
+              <span class="word-visual-icon" id="word-visual-icon">🎯</span>
+              <span class="word-visual-label" id="word-visual-label">Preparado</span>
+            </div>
             <div id="target-word" class="target-word unified-text"></div>
           </div>
         </div>
@@ -388,14 +392,14 @@
 
           <label for="start-difficulty-select">Mundo / Lección</label>
           <select id="start-difficulty-select" class="difficulty-select">
-            <option value="1-infantil">1 - 🌲 El Bosque de las Vocales y Animales</option>
-            <option value="2-basico">2 - 🏴‍☠️ La Isla Pirata y Criaturas Mágicas</option>
-            <option value="3-principiante">3 - 🏰 El Reino de los Cuentos Divertidos</option>
-            <option value="4-intermedio">4 - 🧩 Adivinanzas Infantiles</option>
-            <option value="5-avanzado">5 - 😂 Club de Chistes para Niños</option>
-            <option value="6-experto">6 - 🌀 Trabalenguas Traviesos</option>
-            <option value="7-maestria">7 - 🚀 Expedición Galáctica a las Estrellas</option>
-            <option value="8-absurdo">8 - 🐉 El Gran Desafío del Dragón Robot</option>
+            <option value="1-indices">1 - 🎯 Los Índices en Casa (F y J)</option>
+            <option value="2-filaguia">2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)</option>
+            <option value="3-vocales-ei">3 - ✨ Vocales E/I y Primeras Palabras</option>
+            <option value="4-expansion">4 - 🍎 Vocales O/U y Letras (C, M, P, T)</option>
+            <option value="5-frases">5 - 🌟 Frases Cortas y Barra Espaciadora</option>
+            <option value="6-cuentos">6 - 🏰 El Reino de los Cuentos y Aventuras</option>
+            <option value="7-chistes">7 - 😂 Club de Chistes y Trabalenguas</option>
+            <option value="8-galaxia">8 - 🐉 Desafío Galáctico del Dragón Robot</option>
           </select>
 
           <div id="start-difficulty-description" class="difficulty-description"></div>
@@ -452,14 +456,14 @@
           <div class="settings-group">
             <label for="difficulty-select">Mundo / Nivel</label>
             <select id="difficulty-select" class="difficulty-select">
-              <option value="1-infantil">1 - 🌲 El Bosque de las Vocales y Animales</option>
-              <option value="2-basico">2 - 🏴‍☠️ La Isla Pirata y Criaturas Mágicas</option>
-              <option value="3-principiante">3 - 🏰 El Reino de los Cuentos Divertidos</option>
-              <option value="4-intermedio">4 - 🧩 Adivinanzas Infantiles</option>
-              <option value="5-avanzado">5 - 😂 Club de Chistes para Niños</option>
-              <option value="6-experto">6 - 🌀 Trabalenguas Traviesos</option>
-              <option value="7-maestria">7 - 🚀 Expedición Galáctica a las Estrellas</option>
-              <option value="8-absurdo">8 - 🐉 El Gran Desafío del Dragón Robot</option>
+              <option value="1-indices">1 - 🎯 Los Índices en Casa (F y J)</option>
+              <option value="2-filaguia">2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)</option>
+              <option value="3-vocales-ei">3 - ✨ Vocales E/I y Primeras Palabras</option>
+              <option value="4-expansion">4 - 🍎 Vocales O/U y Letras (C, M, P, T)</option>
+              <option value="5-frases">5 - 🌟 Frases Cortas y Barra Espaciadora</option>
+              <option value="6-cuentos">6 - 🏰 El Reino de los Cuentos y Aventuras</option>
+              <option value="7-chistes">7 - 😂 Club de Chistes y Trabalenguas</option>
+              <option value="8-galaxia">8 - 🐉 Desafío Galáctico del Dragón Robot</option>
             </select>
 
             <div id="difficulty-description" class="difficulty-description"></div>
@@ -488,7 +492,7 @@
       <div id="level-complete" class="level-complete hidden" aria-live="polite">
         <div class="level-complete-box">
           <div class="celebrate-avatar-wrap">
-            <img class="celebrate-avatar mascot-bounce" src="assets/robot_victory.png" alt="Roby victorioso" />
+            <img id="level-complete-avatar" class="celebrate-avatar mascot-bounce" src="assets/robot_victory.png" alt="Roby celebrando" />
             <img id="trophy-badge" class="celebrate-trophy mascot-bounce" src="assets/kids_gold_trophy.png" alt="Trofeo de oro de super campeón" />
           </div>
           <div class="stars-rating" id="stars-rating">
@@ -506,7 +510,10 @@
           <div class="level-complete-mascot-speech" id="level-complete-mascot-speech">
             "¡Eres un as del teclado! ¡Cada día escribes más rápido y mejor!"
           </div>
-          <button id="next-level-btn" class="pulse-button">¡Siguiente Aventura! 🚀</button>
+          <div class="level-complete-buttons">
+            <button id="retry-level-btn" class="pulse-button hidden">¡Reintentar Desafío! 🔄</button>
+            <button id="next-level-btn" class="pulse-button">¡Siguiente Aventura! 🚀</button>
+          </div>
         </div>
       </div>
   </div>

@@ -13,7 +13,7 @@ let correctKeystrokes = 0;
 let level = 1;
 
 let wordsCompleted = 0;
-let wordsGoal = 6;
+let wordsGoal = 8; // Micro-desafíos de 8 palabras para niños de 6 a 8 años
 
 let startTime = Date.now();
 let apmInterval = null;
@@ -24,8 +24,13 @@ let pendingAccent = null;
 let soundEnabled = true;
 let voiceEnabled = true;
 let animationEnabled = true;
-let difficulty = "1-infantil";
+let difficulty = "1-indices";
 let keyboardType = "completo";
+
+// Sistema de Refuerzo de Letras Problemáticas
+let problemKeyTracker = {};
+let activeReinforcedChar = null;
+let reinforceRemaining = 0;
 
 // Sistema de Combos y Racha
 let currentCombo = 0;
@@ -50,6 +55,11 @@ const comboCounter = document.getElementById("combo-counter");
 const comboNumber = document.getElementById("combo-number");
 const zoomToggleBtn = document.getElementById("zoom-toggle-btn");
 const accessibilityTextSize = document.getElementById("accessibility-text-size");
+
+// Apoyo Visual e Iconográfico de la Palabra
+const wordVisualBadge = document.getElementById("word-visual-badge");
+const wordVisualIcon = document.getElementById("word-visual-icon");
+const wordVisualLabel = document.getElementById("word-visual-label");
 
 // Mascota Roby
 const mascotAvatar = document.getElementById("mascot-avatar");
@@ -82,8 +92,11 @@ const levelCompleteTitleEl = document.getElementById("level-complete-title");
 const levelCompleteMessageEl = document.getElementById("level-complete-message");
 const levelCompleteStatsSummary = document.getElementById("level-complete-stats-summary");
 const levelCompleteMascotSpeech = document.getElementById("level-complete-mascot-speech");
+const levelCompleteAvatar = document.getElementById("level-complete-avatar");
+const trophyBadge = document.getElementById("trophy-badge");
 const starsRatingEl = document.getElementById("stars-rating");
 const nextLevelBtn = document.getElementById("next-level-btn");
+const retryLevelBtn = document.getElementById("retry-level-btn");
 
 const settingsBtn = document.getElementById("settings-btn");
 const settingsPanel = document.getElementById("settings-panel");
@@ -485,50 +498,50 @@ function resetIdleTimer() {
 
 // Lecciones y consejos pedagógicos de Roby por cada nivel
 const LEVEL_LESSONS = {
-  "1-infantil": {
-    name: "🌲 El Bosque de las Vocales",
-    speech: "¡Hola! En este nivel practicaremos palabras cortitas. ¡Mira la tecla que se ilumina!",
-    tip: "💡 Consejo de Roby: Coloca tus dedos índices en la F y la J. ¡Tienen marquitas para descansar las manos ahí!"
+  "1-indices": {
+    name: "1 - 🎯 Los Índices en Casa (F y J)",
+    speech: "¡Hola! Coloca tus dedos índices en las marcas de la F y la J. ¡Sigue el ritmo de las luces!",
+    tip: "💡 Consejo de Roby: Fíjate en los pequeños bultitos en las teclas F y J. ¡Ahí descansan tus dedos índices!"
   },
-  "2-basico": {
-    name: "🏴‍☠️ La Isla Pirata Mágica",
-    speech: "¡Rumbo a la Isla Pirata! Aquí practicaremos palabras mágicas con acentos.",
+  "2-filaguia": {
+    name: "2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)",
+    speech: "¡Muy bien! Ahora dejamos descansar todos los deditos en la fila central como patitas de gatito.",
+    tip: "💡 Consejo de Roby: Cada dedo tiene su tecla: Meñique en la A, anular en la S, corazón en la D e índice en la F."
+  },
+  "3-vocales-ei": {
+    name: "3 - ✨ Vocales E/I y Primeras Palabras",
+    speech: "¡Atención! Añadimos las vocales E e I. Los dedos corazón suben un pasito y vuelven a casa.",
+    tip: "💡 Consejo de Roby: Sube el dedo corazón a la E o la I y devuélvelo enseguida a su casa central."
+  },
+  "4-expansion": {
+    name: "4 - 🍎 Vocales (O, U) y Letras (C, M, P, T)",
+    speech: "¡Llegan las vocales O y U y las consonantes C, M, P y T! ¡Mira qué palabras tan chulas!",
+    tip: "💡 Consejo de Roby: Mantén las muñecas relajadas sobre la mesa como si sostuvieras una manzana."
+  },
+  "5-frases": {
+    name: "5 - 🌟 Frases Cortas y Barra Espaciadora",
+    speech: "¡Increíble! Ahora escribiremos frases de dos o tres palabras usando el pulgar para dar espacios.",
+    tip: "💡 Consejo de Roby: Al terminar una palabra, pulsa la barra espaciadora con el pulgar para respirar."
+  },
+  "6-cuentos": {
+    name: "6 - 🏰 El Reino de los Cuentos y Aventuras",
+    speech: "¡Había una vez...! Vamos a escribir historias mágicas de una línea completa.",
     tip: "💡 Consejo de Roby: Para escribir acentos, pulsa primero la tecla del acento (´) y luego la vocal."
   },
-  "3-principiante": {
-    name: "🏰 El Reino de los Cuentos",
-    speech: "¡Había una vez...! Vamos a escribir frases completas de historias mágicas.",
-    tip: "💡 Consejo de Roby: Usa los dos pulgares para la barra de espacio al final de cada palabra."
-  },
-  "4-intermedio": {
-    name: "🧩 Adivinanzas Infantiles",
-    speech: "¡Hora de adivinar! Lee la adivinanza y escribe la respuesta divertida.",
-    tip: "💡 Consejo de Roby: ¡Intenta no mirar las manos! Mira la pantalla y confía en tus deditos."
-  },
-  "5-avanzado": {
-    name: "😂 Club de Chistes",
-    speech: "¡A reírnos un rato! Escribiremos chistes divertidos con signos de exclamación y risas.",
-    tip: "💡 Consejo de Roby: Mantén un ritmo suave y constante, como si cantaras una canción."
-  },
-  "6-experto": {
-    name: "🌀 Trabalenguas Traviesos",
-    speech: "¡Cuidado no se te trabe la lengua ni los dedos! A ver qué tal este trabalenguas.",
+  "7-chistes": {
+    name: "7 - 😂 Club de Chistes y Trabalenguas",
+    speech: "¡A reírnos y desafiar a los dedos! Cuidado que no se te trabe la lengua.",
     tip: "💡 Consejo de Roby: El dedo meñique es pequeño pero muy ágil. ¡Úsalo para la tecla Mayús!"
   },
-  "7-maestria": {
-    name: "🚀 Expedición Galáctica",
-    speech: "¡3, 2, 1... Despegue! Escribiremos relatos espaciales rumbo a las estrellas.",
-    tip: "💡 Consejo de Roby: Mantén la espalda recta y las muñecas relajadas sobre la mesa."
-  },
-  "8-absurdo": {
-    name: "🐉 El Desafío del Dragón",
-    speech: "¡El reto definitivo! El Dragón Robot quiere ver la magia de tus pulsaciones.",
-    tip: "💡 Consejo de Roby: ¡Concéntrate al máximo, supercampeón! ¡Tú puedes lograr las 3 estrellas!"
+  "8-galaxia": {
+    name: "8 - 🐉 Desafío Galáctico del Dragón Robot",
+    speech: "¡El reto definitivo de los campeones! Roby y el Dragón Robot te coronarán como maestro del teclado.",
+    tip: "💡 Consejo de Roby: ¡Respira hondo y confía en tus deditos mágicos! ¡Tú tienes superpoderes!"
   }
 };
 
 function updateLessonInfo(speakLesson = false) {
-  const lesson = LEVEL_LESSONS[difficulty] || LEVEL_LESSONS["1-infantil"];
+  const lesson = LEVEL_LESSONS[difficulty] || LEVEL_LESSONS["1-indices"];
   if (wordCategoryBadge) wordCategoryBadge.textContent = lesson.name;
   if (levelTitleDisplay) levelTitleDisplay.textContent = lesson.name;
   if (mascotLessonTip) mascotLessonTip.textContent = lesson.tip;
@@ -958,16 +971,27 @@ function handleVideoFallback() {
   });
 }
 
+const LEVEL_SEQUENCE = [
+  "1-indices",
+  "2-filaguia",
+  "3-vocales-ei",
+  "4-expansion",
+  "5-frases",
+  "6-cuentos",
+  "7-chistes",
+  "8-galaxia"
+];
+
 function getDifficultyDescription(value) {
   const descriptions = {
-    "1-infantil": "Palabras cortas y dulces (sol, oso, gato, luna). ¡Ideal para empezar a familiarizarse sin prisas!",
-    "2-basico": "Palabras mágicas y piratas con acentos suaves (dragón, cohete, estrella, tesoro). ¡Para ganar soltura!",
-    "3-principiante": "Frases sencillas de cuentos fantásticos para escribir coordinando ambas manos.",
-    "4-intermedio": "¡Adivinanzas infantiles! Lee la adivinanza y escribe la respuesta para descubrirla.",
-    "5-avanzado": "Chistes limpios y graciosos para practicar signos de interrogación y puntuación entre risas.",
-    "6-experto": "Trabalenguas traviesos que pondrán a prueba la agilidad de tus dedos. ¡Cuidado no te trabes!",
-    "7-maestria": "Crónicas galácticas de exploradores y estrellas para campeones de la mecanografía.",
-    "8-absurdo": "¡El Desafío del Dragón Robot! Retos épicos con hechizos y turbo de velocidad."
+    "1-indices": "¡Los índices en casa! Pulsa la F y la J al ritmo de la música. ¡Sin prisas ni estrés!",
+    "2-filaguia": "La fila guía central (A S D F / J K L Ñ). Todos tus deditos descansan en su casita.",
+    "3-vocales-ei": "Las vocales superiores E e I con un pasito corto hacia arriba de los dedos corazón.",
+    "4-expansion": "¡Vocales O, U y letras C, M, P, T! Palabras dulces como pato, casa, sol y tomate.",
+    "5-frases": "Frases cortas separadas con el pulgar en la barra espaciadora. ¡El pato, la casa, mi mamá!",
+    "6-cuentos": "Frases completas de historias mágicas con dragones, estrellas y animales marinos.",
+    "7-chistes": "Chistes y trabalenguas traviesos con signos de exclamación y retos de agilidad.",
+    "8-galaxia": "¡El Desafío Galáctico del Dragón Robot! Relatos espaciales para maestros de la mecanografía."
   };
   return descriptions[value] || "";
 }
@@ -978,24 +1002,18 @@ function updateDifficultyDescriptions() {
 }
 
 function getWordsGoalForLevel() {
-  const multipliers = {
-    "1-infantil": 0.8,
-    "2-basico": 0.9,
-    "3-principiante": 1.0,
-    "4-intermedio": 1.0,
-    "5-avanzado": 1.1,
-    "6-experto": 1.1,
-    "7-maestria": 1.2,
-    "8-absurdo": 1.2
-  };
-  const multiplier = multipliers[difficulty] || 1.0;
-  return Math.max(4, Math.round(5 * multiplier));
+  // Nivel 8 usa textos largos/párrafos (3 párrafos). Los niveles 1 a 7 usan micro-sesiones de 8 palabras.
+  if (difficulty === "8-galaxia") return 3;
+  return 8;
 }
 
 function getCurrentWordList() {
+  if (typeof KIDS_LEVELS !== "undefined" && KIDS_LEVELS[difficulty]) {
+    return KIDS_LEVELS[difficulty].words.map(w => w.text);
+  }
   const wordList = WORD_LIST[difficulty];
   if (!wordList || wordList.length === 0) {
-    return WORD_LIST["1-infantil"];
+    return WORD_LIST["1-indices"] || [];
   }
   return wordList;
 }
@@ -1003,6 +1021,14 @@ function getCurrentWordList() {
 function pickRandomWord() {
   const words = getCurrentWordList();
   if (words.length === 1) return words[0];
+
+  // Refuerzo inteligente: Si hay una letra problemática activa, priorizar palabras que la contengan
+  if (activeReinforcedChar && reinforceRemaining > 0) {
+    const reinforcingWords = words.filter(w => w.toLowerCase().includes(activeReinforcedChar) && w !== lastWord);
+    if (reinforcingWords.length > 0) {
+      return reinforcingWords[Math.floor(Math.random() * reinforcingWords.length)];
+    }
+  }
 
   let selected = words[Math.floor(Math.random() * words.length)];
   let attempts = 0;
@@ -1036,6 +1062,16 @@ function updateWordDisplay() {
   const correctPart = currentWord.slice(0, currentIndex);
   const nextChar = currentWord[currentIndex] || "";
   const remaining = currentWord.slice(currentIndex + 1);
+
+  // Actualizar el apoyo visual e iconográfico para el niño
+  if (wordVisualBadge && wordVisualIcon && wordVisualLabel) {
+    if (typeof getWordVisualInfo === "function") {
+      const visualInfo = getWordVisualInfo(currentWord);
+      wordVisualIcon.textContent = visualInfo.icon || "🎯";
+      wordVisualLabel.textContent = visualInfo.label || "¡Tú puedes!";
+      wordVisualBadge.classList.remove("hidden");
+    }
+  }
 
   // Escalar el tamaño de fuente dinámicamente según la longitud del texto
   const len = currentWord.length;
@@ -1410,6 +1446,14 @@ function handleKeydown(event) {
       }
     }
 
+    // Comprobar si completamos un carácter reforzado
+    if (activeReinforcedChar && typedChar.toLowerCase() === activeReinforcedChar) {
+      reinforceRemaining = Math.max(0, reinforceRemaining - 1);
+      if (reinforceRemaining <= 0) {
+        activeReinforcedChar = null;
+      }
+    }
+
     if (currentIndex >= currentWord.length) {
       wordsCompleted++;
       showFeedback("¡Sensacional! ⭐", "good");
@@ -1441,19 +1485,32 @@ function handleKeydown(event) {
     comboCounter.classList.add("hidden");
     showFeedback("¡Ánimo!", "bad");
 
+    // Registro de letra problemática para refuerzo adaptativo
+    const expectedChar = (expected || "").toLowerCase();
+    if (expectedChar && expectedChar !== " ") {
+      problemKeyTracker[expectedChar] = (problemKeyTracker[expectedChar] || 0) + 1;
+      if (problemKeyTracker[expectedChar] >= 2 && !activeReinforcedChar) {
+        activeReinforcedChar = expectedChar;
+        reinforceRemaining = 3; // Reforzar en las siguientes 3 palabras
+        problemKeyTracker[expectedChar] = 0;
+      }
+    }
+
     const errorMsg = ROBY_PHRASES.comfortErrors[Math.floor(Math.random() * ROBY_PHRASES.comfortErrors.length)];
     setMascotMood("error", errorMsg, false);
 
+    // Colchón de error suave: parpadeo rojo pastel sin reiniciar la palabra
     if (/^[a-zñçáéíóúÁÉÍÓÚ!"·$%&/()\=;:.,¿?@#~€|\\{}[\]]$/i.test(key) || key === " " || key === "Enter") {
-      flashKey(key, "key--wrong");
+      flashKey(key, "key--wrong-soft");
     }
 
     playSound(errorSound);
 
+    // Mantener la tecla correcta iluminada esperando al niño
     updateFingerGuide(expected);
     highlightTargetKey();
 
-    // Volver a feliz tras 1.4s
+    // Volver a estado alegre tras 1.4s
     setTimeout(() => {
       if (mascotMood === "error") {
         setMascotMood("happy", "¡Vamos a por la siguiente letra!");
@@ -1497,14 +1554,14 @@ function saveLevelStars(diffKey, newStars) {
 function updateLevelSelectLabels() {
   const progress = getStarsProgress();
   const baseLabels = {
-    "1-infantil": "1 - 🌲 El Bosque de las Vocales y Animales",
-    "2-basico": "2 - 🏴‍☠️ La Isla Pirata y Criaturas Mágicas",
-    "3-principiante": "3 - 🏰 El Reino de los Cuentos Divertidos",
-    "4-intermedio": "4 - 🧩 Adivinanzas Infantiles",
-    "5-avanzado": "5 - 😂 Club de Chistes para Niños",
-    "6-experto": "6 - 🌀 Trabalenguas Traviesos",
-    "7-maestria": "7 - 🚀 Expedición Galáctica a las Estrellas",
-    "8-absurdo": "8 - 🐉 El Gran Desafío del Dragón Robot"
+    "1-indices": "1 - 🎯 Los Índices en Casa (F y J)",
+    "2-filaguia": "2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)",
+    "3-vocales-ei": "3 - ✨ Vocales E/I y Primeras Palabras",
+    "4-expansion": "4 - 🍎 Vocales O/U y Letras (C, M, P, T)",
+    "5-frases": "5 - 🌟 Frases Cortas y Barra Espaciadora",
+    "6-cuentos": "6 - 🏰 El Reino de los Cuentos y Aventuras",
+    "7-chistes": "7 - 😂 Club de Chistes y Trabalenguas",
+    "8-galaxia": "8 - 🐉 Desafío Galáctico del Dragón Robot"
   };
 
   [startDifficultySelect, difficultySelect].forEach(selectEl => {
@@ -1522,7 +1579,7 @@ function updateLevelSelectLabels() {
 }
 
 // =============================================================================
-// 🏆 FINALIZACIÓN DE NIVEL Y CELEBRACIÓN
+// 🏆 FINALIZACIÓN DE NIVEL, PRECISIÓN Y EVALUACIÓN PEDAGÓGICA
 // =============================================================================
 
 function showLevelComplete() {
@@ -1530,29 +1587,61 @@ function showLevelComplete() {
   if (idleTimer) clearTimeout(idleTimer);
 
   const accuracy = totalKeystrokes > 0 ? Math.round((correctKeystrokes / totalKeystrokes) * 100) : 100;
-  let stars = 3;
-  let speech = "¡Perfección absoluta! ¡Eres un auténtico maestro del teclado!";
+  
+  // Umbral de avance: 85% para los niveles iniciales de anclaje (1 y 2), 90% para niveles 3 en adelante
+  const currentLevelConfig = typeof KIDS_LEVELS !== "undefined" ? KIDS_LEVELS[difficulty] : null;
+  const minRequiredAccuracy = currentLevelConfig ? currentLevelConfig.minAccuracy : (difficulty.startsWith("1") || difficulty.startsWith("2") ? 85 : 90);
+  const passed = accuracy >= minRequiredAccuracy;
 
-  if (errors > 4 || accuracy < 80) {
+  let stars = 1;
+  let speech = "";
+
+  if (passed) {
+    if (accuracy >= 96) {
+      stars = 3;
+      speech = "¡Perfección absoluta! ¡Tus deditos parecen mágicos!";
+    } else {
+      stars = 2;
+      speech = "¡Sensacional! ¡Has superado el desafío con una gran precisión!";
+    }
+  } else {
     stars = 1;
-    speech = "¡Bien jugado! Si practicas una vez más conseguirás todas las estrellas.";
-  } else if (errors > 1 || accuracy < 92) {
-    stars = 2;
-    speech = "¡Sensacional! ¡Has rozado la perfección!";
+    speech = `¡Muy buen intento! Has alcanzado un ${accuracy}% de aciertos. Necesitamos un ${minRequiredAccuracy}% para abrir la siguiente puerta mágica. ¡Vamos a entrenar otra vez juntos!`;
   }
 
   let starsStr = "";
   for (let i = 0; i < stars; i++) starsStr += "⭐";
   starsRatingEl.textContent = starsStr;
 
-  saveLevelStars(difficulty, stars);
+  if (passed) {
+    saveLevelStars(difficulty, stars);
+  }
 
   const elapsedMinutes = (Date.now() - startTime) / 60000;
   const ppm = elapsedMinutes > 0 ? Math.round(totalKeystrokes / elapsedMinutes) : 0;
 
   levelCompleteCountEl.textContent = wordsCompleted.toString();
-  levelCompleteTitleEl.textContent = `¡Misión ${level} Cumplida! 🎉`;
-  levelCompleteMessageEl.innerHTML = `Has completado <strong>${wordsCompleted} textos</strong> con <strong>${accuracy}%</strong> de precisión.`;
+
+  if (passed) {
+    levelCompleteTitleEl.textContent = `¡Misión Cumplida! 🎉`;
+    levelCompleteMessageEl.innerHTML = `Has completado el micro-desafío con <strong>${accuracy}% de precisión</strong> (Mínimo: ${minRequiredAccuracy}%). ¡Puerta desbloqueada!`;
+    if (levelCompleteAvatar) levelCompleteAvatar.src = "assets/robot_victory.png";
+    if (trophyBadge) trophyBadge.classList.remove("hidden");
+    if (nextLevelBtn) nextLevelBtn.classList.remove("hidden");
+    if (retryLevelBtn) retryLevelBtn.classList.add("hidden");
+    setMascotMood("victory", speech, true);
+    playSound(levelUpSound);
+    launchConfetti(3500);
+  } else {
+    levelCompleteTitleEl.textContent = `¡Casi lo tienes, Campeón! 🌟`;
+    levelCompleteMessageEl.innerHTML = `Has logrado un <strong>${accuracy}% de aciertos</strong>. Para avanzar a la siguiente lección necesitamos un <strong>${minRequiredAccuracy}%</strong>. ¡Practiquemos de nuevo!`;
+    if (levelCompleteAvatar) levelCompleteAvatar.src = "assets/robot_happy.png";
+    if (trophyBadge) trophyBadge.classList.add("hidden");
+    if (nextLevelBtn) nextLevelBtn.classList.add("hidden");
+    if (retryLevelBtn) retryLevelBtn.classList.remove("hidden");
+    setMascotMood("happy", speech, true);
+    playSound(goodSound);
+  }
 
   if (levelCompleteStatsSummary) {
     levelCompleteStatsSummary.innerHTML = `
@@ -1563,19 +1652,13 @@ function showLevelComplete() {
   }
 
   levelCompleteMascotSpeech.textContent = `Roby: "${speech}"`;
-
-  setMascotMood("victory", speech, true);
   levelCompleteEl.classList.remove("hidden");
-  playSound(levelUpSound);
-
-  launchConfetti(3500);
 }
 
-function hideLevelCompleteAndNext() {
+function retryCurrentLevel() {
   playSound(buttonClickSound);
-
   levelCompleteEl.classList.add("hidden");
-  level++;
+
   wordsCompleted = 0;
   errors = 0;
   totalKeystrokes = 0;
@@ -1588,6 +1671,39 @@ function hideLevelCompleteAndNext() {
   updateStats();
   setNewWord();
   updateLessonInfo(true);
+  isPaused = false;
+}
+
+function hideLevelCompleteAndNext() {
+  playSound(buttonClickSound);
+  levelCompleteEl.classList.add("hidden");
+
+  // Avanzar al siguiente nivel en la secuencia didáctica
+  const currentIndex = LEVEL_SEQUENCE.indexOf(difficulty);
+  if (currentIndex !== -1 && currentIndex + 1 < LEVEL_SEQUENCE.length) {
+    difficulty = LEVEL_SEQUENCE[currentIndex + 1];
+    level = currentIndex + 2;
+  } else {
+    // Si ya completó el nivel 8
+    level++;
+  }
+
+  if (difficultySelect) difficultySelect.value = difficulty;
+  if (startDifficultySelect) startDifficultySelect.value = difficulty;
+
+  wordsCompleted = 0;
+  errors = 0;
+  totalKeystrokes = 0;
+  correctKeystrokes = 0;
+  currentCombo = 0;
+  comboCounter.classList.add("hidden");
+  wordsGoal = getWordsGoalForLevel();
+
+  startAPMTimer();
+  updateStats();
+  updateDifficultyDescriptions();
+  updateLessonInfo(true);
+  setNewWord();
   isPaused = false;
 }
 
@@ -1795,6 +1911,8 @@ window.addEventListener("load", () => {
   updateStats();
   updateDifficultyDescriptions();
   updateLevelSelectLabels();
+  updateLessonInfo(false);
+  setNewWord();
   initVirtualKeyboardClicks();
 
   // Asegurar carga de voces
@@ -1806,7 +1924,8 @@ window.addEventListener("load", () => {
   }
 
   window.addEventListener("keydown", handleKeydown);
-  nextLevelBtn.addEventListener("click", hideLevelCompleteAndNext);
+  if (nextLevelBtn) nextLevelBtn.addEventListener("click", hideLevelCompleteAndNext);
+  if (retryLevelBtn) retryLevelBtn.addEventListener("click", retryCurrentLevel);
 
   settingsBtn.addEventListener("click", openSettings);
   closeSettingsBtn.addEventListener("click", closeSettings);
