@@ -428,6 +428,50 @@ body {
   box-shadow: 0 4px 12px rgba(255, 159, 67, 0.45);
 }
 
+/* Insignia de Cinturón de Roby en el Avatar */
+.mascot-belt-tag {
+  position: relative;
+  z-index: 1;
+  margin-top: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #f1f2f6;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  user-select: none;
+  transition: all 0.25s ease;
+}
+
+.mascot-belt-tag.belt-blanco {
+  border-color: #f1f2f6;
+  color: #ffffff;
+}
+
+.mascot-belt-tag.belt-amarillo {
+  border-color: #ffd32a;
+  color: #ffeaa7;
+  box-shadow: 0 0 10px rgba(255, 211, 42, 0.4);
+}
+
+.mascot-belt-tag.belt-verde {
+  border-color: #2ed573;
+  color: #55efc4;
+  box-shadow: 0 0 10px rgba(46, 213, 115, 0.4);
+}
+
+.mascot-belt-tag.belt-negro {
+  border-color: #ffa502;
+  color: #ffbe76;
+  background: rgba(20, 24, 48, 0.75);
+  box-shadow: 0 0 12px rgba(255, 165, 2, 0.5);
+}
+
 .badge-victory {
   background: linear-gradient(135deg, #2ed573, #10ac84);
   box-shadow: 0 4px 12px rgba(46, 213, 115, 0.5);
@@ -1689,36 +1733,205 @@ body {
   color: #ffbe76;
 }
 
-.dialogue-speech {
-  margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.35;
-  color: #f1f2f6;
+.dialogue-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.start-box h1 {
-  margin-top: 0;
-  margin-bottom: 6px;
-  font-size: 2.1rem;
+.roby-rank-tag {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffeaa7;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.76rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #ffeaa7, #fab1a0, #ff7675);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.3px;
 }
 
-.start-subtitle {
+.start-box {
+  width: 95%;
+  max-width: 680px;
+  background: linear-gradient(165deg, rgba(30, 36, 68, 0.96) 0%, rgba(20, 24, 48, 0.98) 100%);
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 28px;
+  padding: 22px 26px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  max-height: 94vh;
+  overflow-y: auto;
+}
+
+/* 🗺️ MAPA DE MUNDOS Y NIVELES (GRID) */
+.levels-map-container {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 12px 14px;
   margin-bottom: 14px;
-  font-size: 1rem;
-  color: #dfe6e9;
 }
 
-.start-box label {
-  display: block;
-  margin-bottom: 6px;
-  text-align: left;
+.levels-map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.map-title {
+  font-weight: 800;
+  font-size: 1rem;
+  color: #ffeaa7;
+}
+
+.map-stars-badge {
+  background: rgba(255, 211, 42, 0.16);
+  border: 1px solid rgba(255, 211, 42, 0.35);
+  color: #ffd32a;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.levels-map-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .levels-map-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.level-map-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 10px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.level-map-card:hover:not(.is-locked) {
+  transform: translateY(-3px) scale(1.03);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #ffd32a;
+  box-shadow: 0 6px 18px rgba(255, 211, 42, 0.25);
+}
+
+.level-map-card.is-selected {
+  background: linear-gradient(145deg, rgba(255, 211, 42, 0.22), rgba(255, 118, 117, 0.18));
+  border-color: #ffd32a;
+  box-shadow: 0 0 16px rgba(255, 211, 42, 0.55), inset 0 0 10px rgba(255, 211, 42, 0.2);
+  transform: translateY(-2px);
+}
+
+.level-map-card.is-locked {
+  opacity: 0.55;
+  filter: grayscale(0.85);
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.card-top-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #a4b0be;
+}
+
+.card-lock-icon {
+  font-size: 0.85rem;
+}
+
+.card-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  transition: transform 0.2s ease;
+}
+
+.level-map-card:hover:not(.is-locked) .card-icon {
+  transform: scale(1.15);
+}
+
+.card-title {
+  font-family: var(--font-main);
+  font-size: 0.76rem;
   font-weight: 700;
-  font-size: 0.95rem;
-  color: #74b9ff;
+  color: #f1f2f6;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.card-stars-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 2px;
+  font-size: 0.78rem;
+}
+
+.card-stars-row .star-empty {
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.start-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.start-keyboard-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.start-keyboard-wrap label {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.reset-progress-link {
+  background: transparent;
+  border: none;
+  color: #a4b0be;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+  padding: 4px;
+}
+
+.reset-progress-link:hover {
+  color: #ff7675;
 }
 
 /* ⚙️ PANEL DE OPCIONES */

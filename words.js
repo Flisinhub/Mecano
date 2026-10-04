@@ -3,6 +3,50 @@
 // Estructura pedagógica graduada por memoria muscular, fonética y apoyos visuales
 // =============================================================================
 
+// 🥋 Rangos y Cinturones evolutivos de Roby
+const ROBY_BELTS = {
+  "blanco": {
+    id: "blanco",
+    name: "Cinturón Blanco",
+    title: "Roby Aprendiz",
+    color: "#f1f2f6",
+    emoji: "🥋⚪",
+    minLevel: 1,
+    minStars: 0,
+    cheer: "¡Has comenzado tu camino de supermecanógrafo con Roby!"
+  },
+  "amarillo": {
+    id: "amarillo",
+    name: "Cinturón Amarillo",
+    title: "Roby Explorador",
+    color: "#ffd32a",
+    emoji: "🥋🟡",
+    minLevel: 3,
+    minStars: 5,
+    cheer: "¡Increíble! ¡Roby ha conseguido el Cinturón Amarillo!"
+  },
+  "verde": {
+    id: "verde",
+    name: "Cinturón Verde",
+    title: "Roby Ninja del Teclado",
+    color: "#2ed573",
+    emoji: "🥋🟢",
+    minLevel: 5,
+    minStars: 11,
+    cheer: "¡Sensacional! ¡Tus dedos se mueven veloces como un ninja!"
+  },
+  "negro": {
+    id: "negro",
+    name: "Cinturón Negro y Corona",
+    title: "Gran Maestro Roby",
+    color: "#ffa502",
+    emoji: "🥋⚫👑",
+    minLevel: 7,
+    minStars: 18,
+    cheer: "¡Perfección legendaria! ¡Eres el Gran Maestro del Teclado!"
+  }
+};
+
 const KIDS_LEVELS = {
   // ---------------------------------------------------------------------------
   // 🎯 NIVEL 1: LOS ÍNDICES EN CASA (F y J)
@@ -12,8 +56,10 @@ const KIDS_LEVELS = {
   "1-indices": {
     id: "1-indices",
     levelNumber: 1,
+    icon: "🎯",
     name: "1 - 🎯 Los Índices en Casa (F y J)",
     shortName: "Índices (F y J)",
+    beltTier: "blanco",
     minAccuracy: 85, // Umbral adaptativo para evitar frustración inicial
     allowedKeys: ["f", "j", " "],
     objective: "Ubicar los índices en las marcas táctiles del teclado",
@@ -44,8 +90,10 @@ const KIDS_LEVELS = {
   "2-filaguia": {
     id: "2-filaguia",
     levelNumber: 2,
+    icon: "🏠",
     name: "2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)",
     shortName: "Fila Guía Central",
+    beltTier: "blanco",
     minAccuracy: 85, // Umbral adaptativo para consolidación motriz
     allowedKeys: ["a", "s", "d", "f", "j", "k", "l", "ñ", " "],
     objective: "Descansar todos los dedos en la posición base",
@@ -74,8 +122,10 @@ const KIDS_LEVELS = {
   "3-vocales-ei": {
     id: "3-vocales-ei",
     levelNumber: 3,
+    icon: "✨",
     name: "3 - ✨ Vocales Superiores (E, I) y Palabras",
     shortName: "Vocales E / I",
+    beltTier: "amarillo",
     minAccuracy: 90, // Paso estricto del 90% a partir de nivel 3
     allowedKeys: ["a", "s", "d", "f", "j", "k", "l", "ñ", "e", "i", " "],
     objective: "Movimiento vertical corto de los dedos medios manteniendo la mano anclada",
@@ -104,8 +154,10 @@ const KIDS_LEVELS = {
   "4-expansion": {
     id: "4-expansion",
     levelNumber: 4,
+    icon: "🍎",
     name: "4 - 🍎 Vocales (O, U) y Letras (C, M, P, T)",
     shortName: "Vocales O/U y C,M,P,T",
+    beltTier: "amarillo",
     minAccuracy: 90,
     allowedKeys: ["a", "s", "d", "f", "j", "k", "l", "ñ", "e", "i", "o", "u", "c", "m", "p", "t", " "],
     objective: "Consolidar el alcance arriba y abajo con la mano anclada en el escritorio",
@@ -135,8 +187,10 @@ const KIDS_LEVELS = {
   "5-frases": {
     id: "5-frases",
     levelNumber: 5,
+    icon: "🌟",
     name: "5 - 🌟 Frases Cortas y Barra Espaciadora",
     shortName: "Frases con Espacio",
+    beltTier: "verde",
     minAccuracy: 90,
     allowedKeys: ["a", "s", "d", "f", "j", "k", "l", "ñ", "e", "i", "o", "u", "c", "m", "p", "t", "b", "r", "z", " "],
     objective: "Coordinar palabras independientes separadas por el pulgar en la barra espaciadora",
@@ -165,8 +219,10 @@ const KIDS_LEVELS = {
   "6-cuentos": {
     id: "6-cuentos",
     levelNumber: 6,
+    icon: "🏰",
     name: "6 - 🏰 El Reino de los Cuentos y Aventuras",
     shortName: "Cuentos Divertidos",
+    beltTier: "verde",
     minAccuracy: 90,
     allowedKeys: "abcdefghijklmnñopqrstuvwxyz .,áéíóú".split(""),
     objective: "Lectura fluida y coordinación de frases enteras",
@@ -193,8 +249,10 @@ const KIDS_LEVELS = {
   "7-chistes": {
     id: "7-chistes",
     levelNumber: 7,
+    icon: "😂",
     name: "7 - 😂 Club de Chistes y Trabalenguas",
     shortName: "Chistes y Retos",
+    beltTier: "negro",
     minAccuracy: 90,
     allowedKeys: "abcdefghijklmnñopqrstuvwxyz .,:;!¡¿?áéíóú".split(""),
     objective: "Dominar signos de puntuación, mayúsculas y reflejos rápidos",
@@ -219,8 +277,10 @@ const KIDS_LEVELS = {
   "8-galaxia": {
     id: "8-galaxia",
     levelNumber: 8,
+    icon: "🐉",
     name: "8 - 🐉 Desafío Galáctico del Dragón Robot",
     shortName: "Desafío Galáctico",
+    beltTier: "negro",
     minAccuracy: 90,
     allowedKeys: "abcdefghijklmnñopqrstuvwxyz .,:;!¡¿?áéíóúÁÉÍÓÚ\n".split(""),
     objective: "Fluidez absoluta de mecanógrafo con párrafos completos",

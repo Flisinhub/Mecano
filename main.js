@@ -32,6 +32,10 @@ let problemKeyTracker = {};
 let activeReinforcedChar = null;
 let reinforceRemaining = 0;
 
+// Sistema de Prevención Benevolente de Errores por Titubeo
+let lastWrongKey = null;
+let lastWrongTimestamp = 0;
+
 // Sistema de Combos y Racha
 let currentCombo = 0;
 let bestCombo = 0;
@@ -55,6 +59,7 @@ const comboCounter = document.getElementById("combo-counter");
 const comboNumber = document.getElementById("combo-number");
 const zoomToggleBtn = document.getElementById("zoom-toggle-btn");
 const accessibilityTextSize = document.getElementById("accessibility-text-size");
+const mapBtn = document.getElementById("map-btn");
 
 // Apoyo Visual e Iconográfico de la Palabra
 const wordVisualBadge = document.getElementById("word-visual-badge");
@@ -67,6 +72,7 @@ const mascotSpeechText = document.getElementById("mascot-speech-text");
 const mascotSpeakBtn = document.getElementById("mascot-speak-btn");
 const mascotLessonTip = document.getElementById("mascot-lesson-tip");
 const mascotBadge = document.getElementById("mascot-badge");
+const mascotBeltTag = document.getElementById("mascot-belt-tag");
 const mascotBubble = document.getElementById("mascot-bubble");
 const voiceWaveIndicator = document.getElementById("voice-wave-indicator");
 const mascotTipBar = document.getElementById("mascot-tip-bar");
@@ -108,6 +114,10 @@ const difficultySelect = document.getElementById("difficulty-select");
 const keyboardSelect = document.getElementById("keyboard-select");
 
 const startScreen = document.getElementById("start-screen");
+const startRobyRank = document.getElementById("start-roby-rank");
+const levelsMapGrid = document.getElementById("levels-map-grid");
+const totalStarsCount = document.getElementById("total-stars-count");
+const resetProgressBtn = document.getElementById("reset-progress-btn");
 const startDifficultySelect = document.getElementById("start-difficulty-select");
 const startKeyboardSelect = document.getElementById("start-keyboard-select");
 const startGameBtn = document.getElementById("start-game-btn");
@@ -252,10 +262,10 @@ function speakText(text) {
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
 
-    // CRÍTICO: pitch = 1.0 evita que los sintetizadores de Windows activen el filtro DSP
-    // que causa el sonido metálico y robótico.
-    utterance.pitch = 1.0;
-    utterance.rate = 0.98; // Ritmo humano natural, amigable y claro
+    // Configuración pedagógica optimizada para niños (6 a 8 años):
+    // Tono alegre y afectuoso (pitch: 1.15) y ritmo pausado y claro (rate: 0.90)
+    utterance.pitch = 1.15;
+    utterance.rate = 0.90;
 
     const bestVoice = getBestSpanishVoice();
     if (bestVoice) {
@@ -1020,7 +1030,7 @@ function getCurrentWordList() {
 
 function pickRandomWord() {
   const words = getCurrentWordList();
-  if (words.length === 1) return words[0];
+  if (words.length <= 1) return words[0] || "";
 
   // Refuerzo inteligente: Si hay una letra problemática activa, priorizar palabras que la contengan
   if (activeReinforcedChar && reinforceRemaining > 0) {
@@ -1030,10 +1040,25 @@ function pickRandomWord() {
     }
   }
 
-  let selected = words[Math.floor(Math.random() * words.length)];
+  let candidatePool = words;
+
+  // 🎯 Fase pedagógica Nivel 1 (Los Índices en Casa F y J):
+  // Palabras 1 a 4 (wordsCompleted < 4): estrictamente continuas sin espacio ("f", "j", "ff", "jj", "fj", "jf")
+  // Palabras 5 a 8 (wordsCompleted >= 4): introducen el pulgar con la barra espaciadora ("f j", "j f", etc.)
+  if (difficulty === "1-indices") {
+    if (wordsCompleted < 4) {
+      const noSpaceWords = words.filter(w => !w.includes(" "));
+      if (noSpaceWords.length > 0) candidatePool = noSpaceWords;
+    } else {
+      const spaceWords = words.filter(w => w.includes(" "));
+      if (spaceWords.length > 0) candidatePool = spaceWords;
+    }
+  }
+
+  let selected = candidatePool[Math.floor(Math.random() * candidatePool.length)];
   let attempts = 0;
-  while (selected === lastWord && attempts < 10) {
-    selected = words[Math.floor(Math.random() * words.length)];
+  while (selected === lastWord && candidatePool.length > 1 && attempts < 10) {
+    selected = candidatePool[Math.floor(Math.random() * candidatePool.length)];
     attempts++;
   }
   return selected;
@@ -1416,12 +1441,13 @@ function handleKeydown(event) {
     typedChar = getShiftNumberChar(key);
   }
 
-  totalKeystrokes++;
-
   const expected = currentWord[currentIndex];
   if (!expected) return;
 
   if (normalizeChar(typedChar) === normalizeChar(expected)) {
+    lastWrongKey = null;
+    lastWrongTimestamp = 0;
+    totalKeystrokes++;
     correctKeystrokes++;
     currentIndex++;
     currentCombo++;
@@ -1479,32 +1505,43 @@ function handleKeydown(event) {
       clearFeedback();
     }
   } else {
-    errors++;
+    // 🛡️ Filtro Benevolente de Errores por Titubeo:
+    // Si el niño presiona repetidamente la misma tecla equivocada en menos de 400ms,
+    // se computa como una sola equivocación para no penalizar el titubeo motor
+    const now = Date.now();
+    const isDuplicateHesitation = (key === lastWrongKey && (now - lastWrongTimestamp) < 400);
+
+    if (!isDuplicateHesitation) {
+      totalKeystrokes++;
+      errors++;
+      lastWrongKey = key;
+      lastWrongTimestamp = now;
+
+      // Registro de letra problemática para refuerzo adaptativo
+      const expectedChar = (expected || "").toLowerCase();
+      if (expectedChar && expectedChar !== " ") {
+        problemKeyTracker[expectedChar] = (problemKeyTracker[expectedChar] || 0) + 1;
+        if (problemKeyTracker[expectedChar] >= 2 && !activeReinforcedChar) {
+          activeReinforcedChar = expectedChar;
+          reinforceRemaining = 3; // Reforzar en las siguientes 3 palabras
+          problemKeyTracker[expectedChar] = 0;
+        }
+      }
+
+      const errorMsg = ROBY_PHRASES.comfortErrors[Math.floor(Math.random() * ROBY_PHRASES.comfortErrors.length)];
+      setMascotMood("error", errorMsg, false);
+      playSound(errorSound);
+    }
+
     currentCombo = 0;
     pendingAccent = null;
     comboCounter.classList.add("hidden");
     showFeedback("¡Ánimo!", "bad");
 
-    // Registro de letra problemática para refuerzo adaptativo
-    const expectedChar = (expected || "").toLowerCase();
-    if (expectedChar && expectedChar !== " ") {
-      problemKeyTracker[expectedChar] = (problemKeyTracker[expectedChar] || 0) + 1;
-      if (problemKeyTracker[expectedChar] >= 2 && !activeReinforcedChar) {
-        activeReinforcedChar = expectedChar;
-        reinforceRemaining = 3; // Reforzar en las siguientes 3 palabras
-        problemKeyTracker[expectedChar] = 0;
-      }
-    }
-
-    const errorMsg = ROBY_PHRASES.comfortErrors[Math.floor(Math.random() * ROBY_PHRASES.comfortErrors.length)];
-    setMascotMood("error", errorMsg, false);
-
     // Colchón de error suave: parpadeo rojo pastel sin reiniciar la palabra
     if (/^[a-zñçáéíóúÁÉÍÓÚ!"·$%&/()\=;:.,¿?@#~€|\\{}[\]]$/i.test(key) || key === " " || key === "Enter") {
       flashKey(key, "key--wrong-soft");
     }
-
-    playSound(errorSound);
 
     // Mantener la tecla correcta iluminada esperando al niño
     updateFingerGuide(expected);
@@ -1528,31 +1565,187 @@ function startAPMTimer() {
 }
 
 // =============================================================================
-// ⭐ PERSISTENCIA DE PROGRESO Y ESTRELLAS POR MUNDO (localStorage)
+// ⭐ PERSISTENCIA DE PROGRESO, MAPA DE MUNDOS Y CINTURONES DE ROBY (localStorage)
 // =============================================================================
 
-function getStarsProgress() {
+const PROGRESS_STORAGE_KEY = "mecano_kids_progress";
+
+const DEFAULT_PROGRESS = {
+  unlockedLevel: 1,
+  stars: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 },
+  currentBelt: "blanco"
+};
+
+function getProgress() {
   try {
-    return JSON.parse(localStorage.getItem("mecano_stars_progress") || "{}");
+    const saved = localStorage.getItem(PROGRESS_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && typeof parsed === "object" && parsed.stars) {
+        return {
+          unlockedLevel: Math.max(1, Math.min(8, Number(parsed.unlockedLevel) || 1)),
+          stars: {
+            1: Number(parsed.stars[1]) || 0,
+            2: Number(parsed.stars[2]) || 0,
+            3: Number(parsed.stars[3]) || 0,
+            4: Number(parsed.stars[4]) || 0,
+            5: Number(parsed.stars[5]) || 0,
+            6: Number(parsed.stars[6]) || 0,
+            7: Number(parsed.stars[7]) || 0,
+            8: Number(parsed.stars[8]) || 0
+          },
+          currentBelt: parsed.currentBelt || "blanco"
+        };
+      }
+    }
   } catch (e) {
-    return {};
+    console.warn("Error leyendo progreso:", e);
+  }
+
+  // Migración transparente desde mecano_stars_progress (versión previa)
+  try {
+    const oldStars = JSON.parse(localStorage.getItem("mecano_stars_progress") || "null");
+    if (oldStars && typeof oldStars === "object") {
+      const migrated = {
+        unlockedLevel: 1,
+        stars: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 },
+        currentBelt: "blanco"
+      };
+      LEVEL_SEQUENCE.forEach((seqKey, idx) => {
+        const lvlNum = idx + 1;
+        if (oldStars[seqKey]) {
+          migrated.stars[lvlNum] = Number(oldStars[seqKey]) || 0;
+          if (migrated.stars[lvlNum] > 0) {
+            migrated.unlockedLevel = Math.max(migrated.unlockedLevel, Math.min(8, lvlNum + 1));
+          }
+        }
+      });
+      migrated.currentBelt = calculateBelt(migrated.stars, migrated.unlockedLevel);
+      saveProgress(migrated);
+      return migrated;
+    }
+  } catch (e) {}
+
+  return JSON.parse(JSON.stringify(DEFAULT_PROGRESS));
+}
+
+function saveProgress(prog) {
+  try {
+    localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(prog));
+  } catch (e) {
+    console.warn("Error guardando progreso:", e);
   }
 }
 
-function saveLevelStars(diffKey, newStars) {
-  const progress = getStarsProgress();
-  const prevStars = progress[diffKey] || 0;
-  if (newStars > prevStars) {
-    progress[diffKey] = newStars;
-    try {
-      localStorage.setItem("mecano_stars_progress", JSON.stringify(progress));
-    } catch (e) {}
-    updateLevelSelectLabels();
+function getTotalStars(starsObj) {
+  if (!starsObj) return 0;
+  return Object.values(starsObj).reduce((acc, val) => acc + (Number(val) || 0), 0);
+}
+
+function calculateBelt(starsObj, unlockedLevel = 1) {
+  const totalStars = getTotalStars(starsObj);
+  // Del más alto al inicial
+  if (unlockedLevel >= 7 && totalStars >= 18) return "negro";
+  if (unlockedLevel >= 5 && totalStars >= 11) return "verde";
+  if (unlockedLevel >= 3 && totalStars >= 5) return "amarillo";
+  return "blanco";
+}
+
+function updateRobyBeltUI() {
+  const progress = getProgress();
+  const beltKey = progress.currentBelt || calculateBelt(progress.stars, progress.unlockedLevel);
+  const belt = (typeof ROBY_BELTS !== "undefined" && ROBY_BELTS[beltKey]) ? ROBY_BELTS[beltKey] : {
+    id: "blanco",
+    name: "Cinturón Blanco",
+    emoji: "🥋⚪"
+  };
+
+  if (mascotBeltTag) {
+    mascotBeltTag.textContent = `${belt.emoji} ${belt.name}`;
+    mascotBeltTag.className = `mascot-belt-tag belt-${belt.id}`;
   }
+  if (startRobyRank) {
+    startRobyRank.textContent = `${belt.emoji} ${belt.name}`;
+    startRobyRank.className = `roby-rank-tag belt-${belt.id}`;
+  }
+}
+
+function renderLevelsMap() {
+  if (!levelsMapGrid) return;
+  const progress = getProgress();
+  const totalStars = getTotalStars(progress.stars);
+
+  if (totalStarsCount) {
+    totalStarsCount.textContent = totalStars.toString();
+  }
+
+  levelsMapGrid.innerHTML = "";
+
+  LEVEL_SEQUENCE.forEach((lvlKey, idx) => {
+    const lvlNum = idx + 1;
+    const isUnlocked = (lvlNum <= progress.unlockedLevel);
+    const lvlConfig = (typeof KIDS_LEVELS !== "undefined" && KIDS_LEVELS[lvlKey]) ? KIDS_LEVELS[lvlKey] : null;
+    const cardIcon = lvlConfig ? (lvlConfig.icon || "🎯") : "🎯";
+    const cardTitle = lvlConfig ? (lvlConfig.shortName || `Nivel ${lvlNum}`) : `Nivel ${lvlNum}`;
+    const earnedStars = progress.stars[lvlNum] || 0;
+    const isSelected = (difficulty === lvlKey);
+
+    const card = document.createElement("div");
+    card.className = `level-map-card${isSelected ? " is-selected" : ""}${!isUnlocked ? " is-locked" : ""}`;
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", isUnlocked ? "0" : "-1");
+    card.setAttribute("aria-label", `Nivel ${lvlNum}: ${cardTitle}. ${isUnlocked ? (earnedStars + " estrellas") : "Bloqueado"}`);
+    if (!isUnlocked) card.setAttribute("aria-disabled", "true");
+
+    let starsHtml = "";
+    for (let s = 1; s <= 3; s++) {
+      if (s <= earnedStars) {
+        starsHtml += `<span class="card-star">⭐</span>`;
+      } else {
+        starsHtml += `<span class="card-star star-empty">⭐</span>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="card-top-row">
+        <span>Nivel ${lvlNum}</span>
+        <span class="card-lock-icon">${isUnlocked ? "🔓" : "🔒"}</span>
+      </div>
+      <div class="card-icon">${cardIcon}</div>
+      <div class="card-title" title="${cardTitle}">${cardTitle}</div>
+      <div class="card-stars-row">${starsHtml}</div>
+    `;
+
+    card.addEventListener("click", () => {
+      if (!isUnlocked) {
+        playSound(errorSound);
+        setMascotMood("thinking", `🔒 ¡Nivel ${lvlNum} con candado! Supera el Nivel ${lvlNum - 1} con al menos 85% de acierto para abrir este desafío.`, true);
+        return;
+      }
+
+      playSound(buttonClickSound);
+      difficulty = lvlKey;
+      if (startDifficultySelect) startDifficultySelect.value = lvlKey;
+      if (difficultySelect) difficultySelect.value = lvlKey;
+
+      document.querySelectorAll(".level-map-card").forEach(c => c.classList.remove("is-selected"));
+      card.classList.add("is-selected");
+
+      updateDifficultyDescriptions();
+      updateLessonInfo(false);
+
+      const lesson = LEVEL_LESSONS[lvlKey];
+      if (lesson) {
+        setMascotMood("reading", lesson.speech, false);
+      }
+    });
+
+    levelsMapGrid.appendChild(card);
+  });
 }
 
 function updateLevelSelectLabels() {
-  const progress = getStarsProgress();
+  const progress = getProgress();
   const baseLabels = {
     "1-indices": "1 - 🎯 Los Índices en Casa (F y J)",
     "2-filaguia": "2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)",
@@ -1566,16 +1759,73 @@ function updateLevelSelectLabels() {
 
   [startDifficultySelect, difficultySelect].forEach(selectEl => {
     if (!selectEl) return;
-    Array.from(selectEl.options).forEach(opt => {
+    Array.from(selectEl.options).forEach((opt, idx) => {
       const base = baseLabels[opt.value];
       if (base) {
-        const stars = progress[opt.value] || 0;
+        const lvlNum = idx + 1;
+        const stars = progress.stars[lvlNum] || 0;
         let starBadge = "";
         for (let i = 0; i < stars; i++) starBadge += "⭐";
         opt.textContent = starBadge ? `${base} [${starBadge}]` : base;
       }
     });
   });
+}
+
+function saveLevelCompletion(levelNumber, newStars) {
+  const progress = getProgress();
+  const prevStars = progress.stars[levelNumber] || 0;
+  let updated = false;
+
+  if (newStars > prevStars) {
+    progress.stars[levelNumber] = newStars;
+    updated = true;
+  }
+
+  // Desbloquear el siguiente nivel (hasta el 8)
+  const nextLevelNum = Math.min(8, levelNumber + 1);
+  if (nextLevelNum > progress.unlockedLevel) {
+    progress.unlockedLevel = nextLevelNum;
+    updated = true;
+  }
+
+  // Comprobar evolución de cinturón de Roby
+  const prevBelt = progress.currentBelt || "blanco";
+  const newBelt = calculateBelt(progress.stars, progress.unlockedLevel);
+  let beltUpgraded = false;
+  if (newBelt !== prevBelt) {
+    progress.currentBelt = newBelt;
+    beltUpgraded = true;
+    updated = true;
+  }
+
+  if (updated) {
+    saveProgress(progress);
+    updateRobyBeltUI();
+    renderLevelsMap();
+    updateLevelSelectLabels();
+  }
+
+  return { beltUpgraded, newBelt, prevBelt };
+}
+
+function resetAllProgress() {
+  const confirmed = confirm("¿Seguro que quieres reiniciar todo tu progreso y empezar desde el principio? Roby volverá al Cinturón Blanco.");
+  if (!confirmed) return;
+
+  saveProgress(JSON.parse(JSON.stringify(DEFAULT_PROGRESS)));
+  difficulty = "1-indices";
+  if (startDifficultySelect) startDifficultySelect.value = "1-indices";
+  if (difficultySelect) difficultySelect.value = "1-indices";
+
+  renderLevelsMap();
+  updateRobyBeltUI();
+  updateLevelSelectLabels();
+  updateDifficultyDescriptions();
+  updateLessonInfo(false);
+
+  setMascotMood("happy", "¡Progreso reiniciado! ¡Vamos a divertirnos y aprender desde el principio!", true);
+  playSound(buttonClickSound);
 }
 
 // =============================================================================
@@ -1613,8 +1863,20 @@ function showLevelComplete() {
   for (let i = 0; i < stars; i++) starsStr += "⭐";
   starsRatingEl.textContent = starsStr;
 
+  const currentLvlIndex = LEVEL_SEQUENCE.indexOf(difficulty);
+  const currentLvlNum = currentLvlIndex !== -1 ? currentLvlIndex + 1 : 1;
+
+  let beltInfo = { beltUpgraded: false, newBelt: "blanco" };
   if (passed) {
-    saveLevelStars(difficulty, stars);
+    beltInfo = saveLevelCompletion(currentLvlNum, stars);
+  }
+
+  // Celebración especial si subió de rango de cinturón
+  if (passed && beltInfo.beltUpgraded) {
+    const beltData = (typeof ROBY_BELTS !== "undefined") ? ROBY_BELTS[beltInfo.newBelt] : null;
+    if (beltData) {
+      speech = `${beltData.cheer} ¡Roby ha conseguido el ${beltData.name}!`;
+    }
   }
 
   const elapsedMinutes = (Date.now() - startTime) / 60000;
@@ -1655,6 +1917,14 @@ function showLevelComplete() {
   levelCompleteEl.classList.remove("hidden");
 }
 
+function resetWordAndKeyTrackers() {
+  problemKeyTracker = {};
+  activeReinforcedChar = null;
+  reinforceRemaining = 0;
+  lastWrongKey = null;
+  lastWrongTimestamp = 0;
+}
+
 function retryCurrentLevel() {
   playSound(buttonClickSound);
   levelCompleteEl.classList.add("hidden");
@@ -1666,6 +1936,7 @@ function retryCurrentLevel() {
   currentCombo = 0;
   comboCounter.classList.add("hidden");
   wordsGoal = getWordsGoalForLevel();
+  resetWordAndKeyTrackers();
 
   startAPMTimer();
   updateStats();
@@ -1698,10 +1969,12 @@ function hideLevelCompleteAndNext() {
   currentCombo = 0;
   comboCounter.classList.add("hidden");
   wordsGoal = getWordsGoalForLevel();
+  resetWordAndKeyTrackers();
 
   startAPMTimer();
   updateStats();
   updateDifficultyDescriptions();
+  renderLevelsMap();
   updateLessonInfo(true);
   setNewWord();
   isPaused = false;
@@ -1710,6 +1983,8 @@ function hideLevelCompleteAndNext() {
 function applyDifficulty() {
   difficulty = difficultySelect.value;
   startDifficultySelect.value = difficulty;
+
+  resetWordAndKeyTrackers();
 
   if (gameStarted) {
     level = 1;
@@ -1726,6 +2001,7 @@ function applyDifficulty() {
   wordsGoal = getWordsGoalForLevel();
   updateStats();
   updateDifficultyDescriptions();
+  renderLevelsMap();
   updateLessonInfo(false);
 
   if (gameStarted) {
@@ -1750,6 +2026,7 @@ function startGame() {
   currentCombo = 0;
   comboCounter.classList.add("hidden");
   wordsGoal = getWordsGoalForLevel();
+  resetWordAndKeyTrackers();
 
   gameStarted = true;
   isPaused = false;
@@ -1911,6 +2188,8 @@ window.addEventListener("load", () => {
   updateStats();
   updateDifficultyDescriptions();
   updateLevelSelectLabels();
+  updateRobyBeltUI();
+  renderLevelsMap();
   updateLessonInfo(false);
   setNewWord();
   initVirtualKeyboardClicks();
@@ -1926,6 +2205,24 @@ window.addEventListener("load", () => {
   window.addEventListener("keydown", handleKeydown);
   if (nextLevelBtn) nextLevelBtn.addEventListener("click", hideLevelCompleteAndNext);
   if (retryLevelBtn) retryLevelBtn.addEventListener("click", retryCurrentLevel);
+
+  // 🗺️ Botón de Mapa en la cabecera
+  if (mapBtn) {
+    mapBtn.addEventListener("click", () => {
+      playSound(buttonClickSound);
+      isPaused = true;
+      if (idleTimer) clearTimeout(idleTimer);
+      startScreen.classList.remove("hidden");
+      renderLevelsMap();
+      updateRobyBeltUI();
+      setMascotMood("happy", "¡Aquí tienes el mapa de aventuras! Elige un mundo para explorar.", true);
+    });
+  }
+
+  // 🔄 Botón de reiniciar progreso
+  if (resetProgressBtn) {
+    resetProgressBtn.addEventListener("click", resetAllProgress);
+  }
 
   settingsBtn.addEventListener("click", openSettings);
   closeSettingsBtn.addEventListener("click", closeSettings);
@@ -1994,6 +2291,7 @@ window.addEventListener("load", () => {
     difficulty = startDifficultySelect.value;
     difficultySelect.value = difficulty;
     updateDifficultyDescriptions();
+    renderLevelsMap();
   });
 
   keyboardSelect.addEventListener("change", toggleKeyboardType);
