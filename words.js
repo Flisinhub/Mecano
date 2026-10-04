@@ -1,154 +1,119 @@
-// Nueva estructura: 8 niveles sin sub-niveles
-// Cada nivel tiene su propio tipo de contenido específico
+// =============================================================================
+// MECANO AVENTURA KIDS - LISTA DE PALABRAS Y MUNDOS DIDÁCTICOS
+// Diseñado especialmente para niños: vocabulario positivo, divertido y progresivo
+// =============================================================================
 
 const WORD_LIST = {
-  // NIVEL 1: INFANTIL - Palabras simples 3-5 letras, sin acentos
+  // 🌲 NIVEL 1: EL BOSQUE DE LAS VOCALES Y ANIMALES
+  // Palabras cortitas de 3 a 5 letras, sin complicaciones, ideales para empezar
   "1-infantil": [
-    "sol", "luz", "pez", "pan", "mar", "oso", "uva", "flor", "gato", "luna",
-    "mesa", "pato", "casa", "bota", "mano", "nube", "tren", "rana", "dedo", "queso",
-    "pera", "moto", "vaca", "loro", "pino", "nido", "lago", "roca", "cola", "dado",
-    "tasa", "vela", "sopa", "tasa", "omo", "fino", "humo", "nene", "papa", "mama",
-    "pelo", "cola", "pata", "rama", "tema", "nota", "lama", "mina", "puma", "seda"
+    "sol", "luz", "oso", "pez", "pan", "mar", "uva", "ola", "rio", "casa",
+    "pato", "gato", "rana", "luna", "pino", "nube", "dado", "tren", "moto", "rosa",
+    "vela", "pera", "bota", "mano", "sopa", "leche", "kiwi", "lobo", "isla", "nido",
+    "foca", "cielo", "taza", "boca", "pelo", "pie", "miel", "copa", "poma", "mesa",
+    "lupa", "cuna", "faro", "mapa", "toro", "hada", "pala", "caja", "lana", "loro"
   ],
 
-  // NIVEL 2: BASICO - Palabras 5-8 letras con algún acento
+  // 🏴‍☠️ NIVEL 2: LA ISLA PIRATA Y CRIATURAS MÁGICAS
+  // Palabras más largas con acentos suaves y personajes fantásticos
   "2-basico": [
-    "perro", "pelota", "ratón", "amigo", "nariz", "silla", "puerta", "coche", "leche", "rosa",
-    "verde", "conejo", "colegio", "escuela", "banana", "abuelo", "abuela", "hermano", "hermana", "profesor",
-    "palabra", "tierra", "cielo", "pájaro", "caballo", "elefante", "jirafa", "tigre", "ballena", "delfín",
-    "computadora", "teléfono", "ventana", "lámpara", "espejo", "sofá", "tapete", "fábula", "película", "música"
+    "dragón", "cohete", "delfín", "mágico", "estrella", "tesoro", "conejo", "galleta",
+    "árbol", "música", "planeta", "pelota", "castillo", "amigo", "brújula", "pirata",
+    "unicornio", "arcoíris", "montaña", "bosque", "jardín", "princesa", "caballero",
+    "tortuga", "ardilla", "jirafa", "pingüino", "burbuja", "diamante", "mariposa",
+    "espada", "reina", "palacio", "canción", "familia", "sonrisa", "cometa", "aventura"
   ],
 
-  // NIVEL 3: PRINCIPIANTE - Frases cortas simples
+  // 🏰 NIVEL 3: EL REINO DE LOS CUENTOS DIVERTIDOS
+  // Frases cortas y alegres de una sola línea para afianzar el ritmo
   "3-principiante": [
-    "la casa es bonita",
-    "quiero jugar fuera",
-    "me gusta pintar flores",
-    "el perro corre mucho",
-    "mi amiga canta bien",
-    "la luna brilla hoy",
-    "vamos al parque",
-    "el gato duerme aqui",
-    "mi mama hace sopa",
-    "el oso come miel",
-    "los ninos juegan felices",
-    "la maestra lee cuentos",
-    "me duele la cabeza",
-    "tengo hambre ahora",
-    "el cafe esta caliente",
-    "la nieve es blanca",
-    "el sol calienta mucho",
-    "los pajaros cantan bonito",
-    "mi amigo es muy simpatico",
-    "la flor huele muy bien"
+    "el gato con botas baila en el tejado.",
+    "el pequeño dragón come helado de fresa.",
+    "mi perrito corre feliz por el parque.",
+    "la luna brilla y cuida todos mis sueños.",
+    "el cohete espacial viaja hacia las estrellas.",
+    "la tortuga nada tranquila en el lago azul.",
+    "los delfines saltan felices sobre las olas.",
+    "el osito panda come ricas hojas de bambú.",
+    "un arcoíris de colores cruza todo el cielo.",
+    "mi mejor amiga comparte sus juguetes conmigo.",
+    "las mariposas juegan entre las flores rosas.",
+    "el ratoncito busca un trozo de queso dulce.",
+    "el hada madrina tiene una varita de estrellas.",
+    "el barco pirata navega buscando una isla secreta.",
+    "las ardillas guardan bellotas en el hueco del roble."
   ],
 
-  // NIVEL 4: INTERMEDIO - Frases medianas con puntuación
+  // 🧩 NIVEL 4: ADIVINANZAS INFANTILES
+  // Adivinanzas populares con su respuesta para despertar la curiosidad
   "4-intermedio": [
-    "hoy llevamos cuentos al cole.",
-    "mi mochila tiene lápices nuevos.",
-    "el pato nada en el agua.",
-    "me gusta saltar en el patio.",
-    "mi hermano juega con bloques.",
-    "la maestra sonríe al entrar.",
-    "la pelota rueda por el suelo.",
-    "mi abuelo lee muy despacio.",
-    "esta noche vamos al cine.",
-    "en la escuela aprendemos muchas cosas.",
-    "los gatos duermen en el sofá.",
-    "mi tia trabaja en un hospital.",
-    "el viaje fue largo pero agradable.",
-    "el helado de chocolate es mi favorito.",
-    "en verano vamos a la playa.",
-    "llueve mucho en primavera.",
-    "las flores del jardín son hermosas.",
-    "el tren sale a las ocho.",
-    "mi primo vive muy lejos.",
-    "la pizzería está cerca de casa."
+    "oro parece y plátano es, ¿qué fruta es? ¡el plátano!",
+    "blanca por dentro, verde por fuera, si quieres que te lo diga, espera: ¡la pera!",
+    "tengo agujas y no sé coser, tengo números y no sé leer: ¡el reloj!",
+    "llevo mi casa siempre en la espalda y camino muy despacio: ¡el caracol!",
+    "vuelo de noche y duermo de día, nunca verás plumas en el ala mía: ¡el murciélago!",
+    "canto en la orilla y nado en el agua, no soy pez ni cigarra: ¡la rana!",
+    "tengo orejas largas y rabo cortito, salto por el campo y como zanahoria: ¡el conejo!",
+    "subo llena de agua y bajo vacía, si no me doy prisa, la sopa se enfría: ¡la cuchara!",
+    "chiquito como un ratón, pero cuida la casa como un león: ¡el candado!",
+    "salgo por el día y doy mucho calor, por la noche me duermo: ¡el sol brillante!",
+    "vuelo sin alas, silbo sin boca, pego sin manos y nadie me toca: ¡el viento!",
+    "dos ventanitas que abres por la mañana y cierras por la noche: ¡los ojos!"
   ],
 
-  // NIVEL 5: AVANZADO - Textos medianos con variedad de puntuación
+  // 😂 NIVEL 5: CLUB DE CHISTES PARA NIÑOS
+  // Chistes blancos y simpáticos para escribir entre risas
   "5-avanzado": [
-    "escribir con calma ayuda a cometer menos errores.",
-    "cuando practico un poco cada día mejoro bastante.",
-    "las palabras cortas son una buena forma de empezar.",
-    "el teclado parece difícil al principio, pero luego mejora.",
-    "una sonrisa hace que aprender sea mucho más divertido.",
-    "si me concentro puedo encontrar mejor cada letra.",
-    "hoy he escrito varias palabras sin mirar tanto las manos.",
-    "mi objetivo no es correr sino escribir bien y sentirme segura.",
-    "poco a poco puedo reconocer mejor donde esta cada letra.",
-    "la paciencia me ayuda a terminar frases más largas.",
-    "esta tarde iremos todos juntos al parque.",
-    "mi conejo pequeño corre por el jardín.",
-    "en clase pintamos nubes azules y soles grandes.",
-    "mi amiga trae galletas para compartir conmigo.",
-    "cada día aprendo letras nuevas con calma.",
-    "la tortuga camina lenta pero siempre avanza.",
-    "en las montañas hace más frío que en la ciudad.",
-    "los libros nos enseñan historias fascinantes.",
-    "mi hermana compró un vestido rojo muy bonito.",
-    "por la mañana desayuno leche con cereales."
+    "¿qué le dice un pez a otro pez en el agua? ¡nada, nada!",
+    "¿qué hace una abeja en el gimnasio? ¡está haciendo zumba!",
+    "¿qué le dice una taza a otra taza? ¡oye, qué taza tan bonita tienes hoy!",
+    "¿por qué los pájaros vuelan al sur en invierno? ¡porque caminando tardarían semanas!",
+    "¿cuál es el colmo de un robot? ¡tener nervios de acero y quedarse sin batería!",
+    "¿qué le dice una pared a otra pared en la esquina? ¡nos vemos en la esquina!",
+    "¿cuál es el dinosaurio más limpio de la selva? ¡el jabonsaurio rex!",
+    "¿qué hace un perro con un taladro en la mano? ¡está taladrando!",
+    "¿por qué el tomate no toma café por la mañana? ¡porque toma té!",
+    "¿qué le dice un semáforo a otro semáforo? ¡no me mires que me estoy poniendo rojo!",
+    "¿cómo se llama el campeón de buceo japonés? ¡tokofondo!",
+    "¿qué le dice una bombilla a un interruptor? ¡me enciendes cada día con tu alegría!"
   ],
 
-  // NIVEL 6: EXPERTO - Textos largos y complejos con puntuación intermedia
+  // 🌀 NIVEL 6: TRABALENGUAS TRAVIESOS
+  // Retos de agilidad y coordinación para los dedos
   "6-experto": [
-    "La práctica constante suele dar mejores resultados que intentar correr demasiado desde el principio.",
-    "Escribir con precisión ayuda a desarrollar confianza y reduce la frustración durante el aprendizaje.",
-    "Un teclado deja de parecer extraño cuando repetimos movimientos pequeños muchas veces.",
-    "Cada sesión corta puede convertirse en una pequeña aventura si el juego responde de forma amable y clara.",
-    "La mecanografía mejora cuando combinamos atención, constancia y una dificultad ajustada al momento.",
-    "Aprender despacio no significa avanzar poco; muchas veces significa avanzar mejor.",
-    "Si una niña se siente tranquila, curiosa y capaz, es mucho más probable que quiera volver a practicar mañana.",
-    "Un buen juego educativo no solo mide errores y velocidad, también crea motivación y sensación de progreso.",
-    "A veces mejorar consiste simplemente en escribir con menos tensión y con un poco más de control.",
-    "Cuando respiro con calma y miro bien el texto me equivoco menos y avanzo mejor.",
-    "Cada nivel nuevo me ayuda a recordar donde están las letras y a ganar confianza.",
-    "Aprender jugando hace que el teclado parezca menos difícil y mucho más divertido.",
-    "Si mantengo un ritmo tranquilo puedo completar frases largas sin agobiarme.",
-    "Los libros son ventanas al mundo que nos permiten explorar lugares nuevos.",
-    "La música clásica ayuda a concentrarse mejor mientras realizamos actividades importantes.",
-    "Los animales salvajes merecen respeto y protección en sus hábitats naturales.",
-    "El deporte es fundamental para mantener una buena salud física y mental.",
-    "La amistad verdadera se basa en la confianza, el respeto y la sinceridad.",
-    "Viajar amplía la mente y nos enseña a entender mejor a otras culturas.",
-    "La lectura habitual mejora nuestro vocabulario y nuestra forma de expresarnos."
+    "tres tristes tigres comían trigo en un gran trigal verde.",
+    "pablito clavó un clavito pequeño en la calva de un calvito simpático.",
+    "erre con erre guitarra, erre con erre barril, rueda que rueda la rueda del ferrocarril.",
+    "el cielo está encapotado, ¿quién lo desencapotará? el buen desencapotador será.",
+    "si Pancha plancha con cuatro planchas, ¿con cuántas planchas plancha Pancha?",
+    "el hipopótamo Hipo tiene hipo, ¿quién le quita el hipo al hipopótamo Hipo?",
+    "tres traviesos ratoncitos tropezaron jugando con tres trozos de queso fresco.",
+    "cuca cose una camisa para el conejo que corre por la colina.",
+    "compadre, cómpreme un coco. compadre, no compro coco, porque el que poco coco come, poco coco compra.",
+    "pepe peña pela patata para una tortilla que prepara con primor en la cocina."
   ],
 
-  // NIVEL 7: MAESTRIA - Textos muy largos con estructura compleja
+  // 🚀 NIVEL 7: EXPEDICIÓN GALÁCTICA A LAS ESTRELLAS
+  // Párrafos de aventuras espaciales y mundos de fantasía
   "7-maestria": [
-    "La neuroplasticidad cerebral representa un fenómeno fascinante en el campo de la psicología cognitiva.\n\nEste concepto explica cómo el cerebro humano puede reorganizar sus conexiones sinápticas en respuesta a experiencias nuevas, lo que implica una adaptabilidad extraordinaria en el aprendizaje de habilidades motoras como la mecanografía.\n\nLa mielinización axonal, proceso mediante el cual las fibras nerviosas se recubren de una capa protectora, acelera la transmisión de impulsos electroquímicos, permitiendo una mayor precisión en movimientos repetitivos.\n\nEn términos de ergonomía postural, mantener una alineación correcta de la columna vertebral y los hombros reduce la fatiga muscular, optimizando así el rendimiento en sesiones prolongadas de práctica.",
-    "La epistemología contemporánea cuestiona los fundamentos del conocimiento humano, explorando cómo construimos realidades a través de paradigmas científicos.\n\nEl método científico, con su énfasis en la falsabilidad popperiana y la replicabilidad experimental, establece un marco riguroso para validar hipótesis.\n\nEn el contexto de la educación digital, la gamificación pedagógica integra elementos lúdicos con objetivos curriculares, potenciando la motivación intrínseca del estudiante.\n\nLa metacognición, o capacidad de reflexionar sobre nuestros propios procesos mentales, resulta esencial para desarrollar estrategias de aprendizaje autónomo y eficiente.",
-    "La inteligencia artificial generativa, basada en modelos de aprendizaje profundo como las redes neuronales convolucionales, transforma la interacción humano-máquina mediante algoritmos de procesamiento de lenguaje natural.\n\nLa tokenización semántica y el embedding contextual permiten una comprensión más precisa de textos complejos, facilitando aplicaciones en traducción automática y análisis de sentimientos.\n\nSin embargo, los sesgos algorítmicos inherentes a los datos de entrenamiento plantean desafíos éticos en la implementación de sistemas de IA responsables.\n\nLa regulación normativa, como el RGPD en Europa, busca equilibrar la innovación tecnológica con la protección de derechos fundamentales.",
-    "La física cuántica desafía las intuiciones clásicas mediante principios como la superposición de estados y el entrelazamiento cuántico.\n\nEl principio de incertidumbre de Heisenberg establece límites fundamentales a la precisión de mediciones simultáneas, mientras que la dualidad onda-partícula revela la naturaleza ondulatoria de la materia.\n\nEn aplicaciones prácticas, la computación cuántica promete revolucionar la criptografía y la simulación molecular, aunque los desafíos técnicos en decoherencia y escalabilidad persisten.\n\nLa mecánica cuántica relativista, integrada en la teoría de campos, proporciona un marco unificado para comprender las interacciones fundamentales del universo.",
-    "La biología molecular revela los mecanismos intrincados de la expresión génica mediante procesos como la transcripción y traducción.\n\nLa regulación epigenética, a través de modificaciones químicas del ADN y proteínas histonas, modula la actividad génica sin alterar la secuencia nucleotídica.\n\nEn el contexto de la medicina personalizada, la genómica comparativa identifica variantes genéticas asociadas a enfermedades, permitiendo intervenciones terapéuticas dirigidas.\n\nLa edición génica con CRISPR-Cas9 representa una herramienta revolucionaria para corregir mutaciones patogénicas, aunque plantea dilemas éticos sobre la modificación del genoma humano.",
-    "La economía conductual integra insights de la psicología cognitiva para explicar desviaciones del modelo racional tradicional.\n\nSesgos como la aversión a pérdidas y el efecto anclaje influyen en decisiones económicas, desafiando la suposición de maximización utilitaria.\n\nEn política monetaria, la teoría de expectativas racionales contrasta con evidencia empírica de rigideces nominales y burbujas especulativas.\n\nLa economía experimental, mediante juegos como el dilema del prisionero, ilustra cómo las normas sociales y la cooperación emergen en contextos estratégicos.",
-    "La lingüística computacional combina teoría del lenguaje con algoritmos de aprendizaje automático para procesar textos naturales.\n\nEl análisis sintáctico y semántico permite descomponer oraciones en estructuras jerárquicas, facilitando aplicaciones en traducción automática y asistentes virtuales.\n\nLos modelos de lenguaje transformer, como BERT y GPT, capturan dependencias contextuales a largo alcance mediante mecanismos de atención.\n\nSin embargo, la opacidad de estos modelos plantea desafíos en interpretabilidad y sesgos lingüísticos inherentes a los corpora de entrenamiento.",
-    "La sociología urbana examina cómo las dinámicas espaciales moldean las interacciones sociales en entornos metropolitanos.\n\nLa teoría de la ecología urbana de Chicago explica procesos de invasión-sucesión en barrios residenciales, mientras que el concepto de gentrificación destaca tensiones entre renovación urbana y desplazamiento poblacional.\n\nEn contextos globales, la urbanización acelerada en países en desarrollo genera desafíos en infraestructura y desigualdad social.\n\nLa planificación urbana sostenible integra principios de resiliencia climática y equidad social para crear ciudades habitables.",
-    "La filosofía de la mente explora la naturaleza de la consciencia y la relación mente-cuerpo.\n\nEl dualismo cartesiano postula una separación ontológica entre sustancia mental y física, mientras que el materialismo eliminativo reduce estados mentales a procesos neurobiológicos.\n\nLa teoría de la identidad mente-cerebro enfrenta el problema de la calificación, cuestionando cómo propiedades fenoménicas emergen de substratos físicos.\n\nEnfoques funcionalistas, como el de Putnam, enfatizan roles causales sobre composiciones materiales, permitiendo equivalencias mente-máquina.",
-    "La historia de la ciencia revela cómo paradigmas revolucionarios transforman nuestro entendimiento del mundo.\n\nLa revolución copernicana desplazó el geocentrismo aristotélico, mientras que la teoría de la evolución darwiniana desafió concepciones teleológicas de la vida.\n\nLa física relativista einsteiniana unificó espacio-tiempo, y la mecánica cuántica introdujo indeterminismo fundamental.\n\nEstos cambios paradigmáticos ilustran cómo la ciencia progresa mediante crisis y revoluciones, según la filosofía de Kuhn.",
-    "La ética de la tecnología evalúa implicaciones morales de innovaciones como la inteligencia artificial y biotecnología.\n\nEl utilitarismo benthamiano maximiza bienestar colectivo, mientras que el deontologismo kantiano enfatiza deberes absolutos.\n\nEn contextos de IA, dilemas como el sesgo algorítmico y privacidad de datos requieren marcos éticos robustos.\n\nLa bioética enfrenta cuestiones en edición génica y eutanasia, equilibrando autonomía individual con responsabilidad social.",
-    "La psicología evolutiva explica comportamientos humanos mediante adaptación natural.\n\nTeorías como la selección parental ilustran altruismo kin, mientras que la teoría de la mente permite atribuir estados mentales a otros.\n\nSesgos cognitivos como la heurística de disponibilidad reflejan adaptaciones ancestrales, aunque pueden generar errores en contextos modernos.\n\nLa coevolución gen-cultura explica complejidad cultural emergente de capacidades cognitivas heredadas.",
-    "La química orgánica estudia compuestos del carbono mediante reacciones como sustitución nucleofílica y eliminación.\n\nLa estereoquímica explica isomería cis-trans y enantiómeros, crucial en síntesis de fármacos.\n\nLa espectroscopía NMR y RMN permite elucidar estructuras moleculares, mientras que la catálisis enzimática acelera reacciones biológicas.\n\nAplicaciones en nanotecnología incluyen dendrímeros y fullerenos para materiales avanzados.",
-    "La astronomía extragaláctica revela universos de galaxias espirales y elípticas.\n\nLa ley de Hubble establece expansión cósmica, mientras que la radiación de fondo cósmico evidencia el Big Bang.\n\nAgujeros negros supermasivos en centros galácticos explican cuásares, y materia oscura domina gravedad cósmica.\n\nLa búsqueda de exoplanetas mediante tránsito planetario identifica mundos potencialmente habitables.",
-    "La antropología cultural examina diversidad de prácticas sociales y simbólicas.\n\nEl relativismo cultural cuestiona etnocentrismo, mientras que el funcionalismo malinowskiano explica instituciones sociales.\n\nRituales de paso marcan transiciones vitales, y mitos transmiten cosmologías culturales.\n\nGlobalización homogeneiza culturas, generando hibridación y resistencia local.",
-    "La matemática pura explora estructuras abstractas como grupos y anillos.\n\nLa teoría de números investiga propiedades de enteros, incluyendo conjetura de Riemann.\n\nLa topología estudia propiedades invariantes bajo deformaciones continuas, aplicable en física teórica.\n\nLa lógica matemática fundamenta consistencia de sistemas axiomáticos, crucial en fundamentos de matemática.",
-    "La ecología de ecosistemas analiza flujos de energía y materia.\n\nLa sucesión ecológica describe cambios post-perturbación, mientras que la biodiversidad mantiene estabilidad.\n\nEl cambio climático antropogénico acelera extinciones, y restauración ecológica mitiga impactos.\n\nModelos de dinámica poblacional predicen interacciones depredador-presa mediante ecuaciones diferenciales.",
-    "La arqueología investiga pasado humano mediante estratigrafía y datación radiocarbónica.\n\nTeorías procesuales explican adaptación cultural, mientras que enfoques postprocesuales enfatizan agencia individual.\n\nSitios como Çatalhöyük revelan orígenes de agricultura, y petroglifos narran historias ancestrales.\n\nArqueología pública democratiza conocimiento, conectando pasado con presente social."
+    "El capitán Roby encendió los motores de la nave estelar Orión con una gran sonrisa.\n\nA través de la ventanilla, miles de estrellas brillaban como diamantes luminosos en el espacio infinito.\n\nSu misión secreta era explorar el fabuloso planeta Caramelo, un mundo asombroso donde los ríos son de chocolate con leche y las montañas están cubiertas de suave nieve de vainilla.\n\nCon un suave giro de timón, la nave entró en la órbita del planeta para comenzar la mayor aventura de sus vidas.",
+
+    "En lo más profundo del bosque encantado vivía un pequeño dragón llamado Chispa.\n\nA diferencia de otros dragones gigantes, Chispa no lanzaba fuego temible, sino pompas de jabón brillantes que flotaban suavemente entre los árboles centenarios.\n\nTodos los animalitos del bosque se reunían cada tarde para aplaudir sus piruetas en el aire y cantar alegres canciones junto al arroyo cristalino.",
+
+    "La astronauta Sofía flotaba en gravedad cero dentro de la cúpula de la estación espacial.\n\nMiraba maravillada hacia abajo y contemplaba la Tierra: una preciosa esfera azul, blanca y verde girando en el silencio cósmico.\n\nTomó su diario de navegación y escribió emocionada: Cada día en el espacio me enseña que nuestro planeta es el tesoro más valioso que todos debemos cuidar y proteger con cariño.",
+
+    "El expreso mágico de las nubes partió a toda velocidad desde el andén de las hadas.\n\nSus vagones de madera reluciente llevaban a los niños más curiosos rumbo a la cumbre de la Montaña Esmeralda.\n\nPor el camino, bandadas de colibríes de plumas doradas acompañaban la marcha con sus trinos alegres, anunciando que la fiesta de la primavera había comenzado en el valle encantado.",
+
+    "El capitán Roby envió un mensaje secreto al correo aventuras@roby.com con el código #estrella.\n\nEnseguida recibió una respuesta luminosa: ¡Has ganado 100€ de energía cósmica para explorar la galaxia!\n\nRoby sonrió con alegría y activó los motores estelares para volar a toda velocidad hacia nuevos mundos mágicos."
   ],
 
-  // NIVEL 8: ABSURDO - Textos extravagantes y delirantes
+  // 🐉 NIVEL 8: EL GRAN DESAFÍO DEL DRAGÓN ROBOT
+  // Retos épicos de mecanografía con emoción y triunfo
   "8-absurdo": [
-    "En una dimensión paralela donde la entropía termodinámica se manifiesta como un elefante cuántico danzando sobre ecuaciones diferenciales parciales, la mecánica ondulatoria colapsa en un ballet de probabilidades inciertas.\n\nLos quarks extraños intercambian gluones virtuales con neutrinos estériles, mientras que la teoría de cuerdas vibra en once dimensiones hiperespaciales, generando membranas topológicas que desafían la causalidad relativista.\n\nLa consciencia emergente de una IA transhumanista, programada con algoritmos genéticos evolucionarios, deconstruye la fenomenología heideggeriana en un bucle recursivo de simulacros baudrillardianos.\n\nParadójicamente, el gato de Schrödinger maúlla ecuaciones de Maxwell en un vacío cuántico, donde la constante de Planck fluctúa como un fractal de Mandelbrot infinito.",
-    "La singularidad tecnológica converge con la paradoja del abuelo en un multiverso de universos burbuja inflacionarios, donde la materia oscura interactúa gravitacionalmente con agujeros negros supermasivos.\n\nLos campos escalares inflatonarios generan fluctuaciones cuánticas primordiales, sembrando las semillas de galaxias espirales en un cosmos holográfico de dimensiones fractales.\n\nLa computación cuántica entrelaza qubits en superposiciones coherentes, resolviendo problemas NP-completos con algoritmos de Shor y Grover en tiempo polinomial.\n\nMientras tanto, la biología sintética reprograma el ADN con CRISPR-Cas9, creando organismos quiméricos que desafían la taxonomía linneana en un ecosistema de xenobiología postdarwiniana.",
-    "La epistemología cuántica fusiona decoherencia neuronal con hologramas de información, donde la consciencia emerge de fluctuaciones cuánticas en microtúbulos citosqueléticos.\n\nEl principio antrópico fuerte postula universos paralelos donde constantes físicas se ajustan para permitir observadores conscientes, mientras que la teoría de la selección cósmica explica fine-tuning mediante multiversos inflacionarios.\n\nLa computación neuromórfica simula redes neuronales spiking con memristores orgánicos, permitiendo aprendizaje profundo en chips de silicio neuronal.\n\nEn este delirio cuántico, la termodinámica de la información maxwelliana se entrelaza con demonios laplacianos, desafiando la segunda ley en universos de baja entropía.",
-    "La biología fractal revela patrones autosimilares en morfologías biológicas, desde ramificaciones vasculares hasta espirales de conchas nautiloides.\n\nLa teoría del caos determina atractores extraños en sistemas dinámicos no lineales, donde pequeñas perturbaciones generan bifurcaciones caóticas en poblaciones ecológicas.\n\nLa epigenética cuántica postula colapsos de función de onda en procesos de metilación del ADN, influenciando expresión génica mediante coherencia cuántica.\n\nEn este paisaje surrealista, virus retrotransposones saltan como caballeros cuánticos, recombinando genomas en un baile de transposones endógenos.",
-    "La sociología cuántica examina colapsos de función de onda social en elecciones colectivas, donde votantes entrelazados generan resultados no deterministas.\n\nLa economía fractal revela mercados eficientes como ilusiones, con precios siguiendo caminatas aleatorias en espacios de Hilbert multidimensionales.\n\nLa psicología transpersonal integra estados alterados de consciencia con campos morfogenéticos sheldrakeanos, permitiendo telepatía cuántica entre mentes no locales.\n\nEn este multiverso delirante, la historia se reescribe mediante retrocausalidad novikoviana, donde futuros alternativos influencian presentes probabilísticos.",
-    "La lingüística cuántica postula fonemas como superposiciones de glotones, donde significados emergen de colapsos contextuales en espacios semánticos vectoriales.\n\nLa semiótica fractal revela signos autosimilares en mitos arquetípicos jungianos, con arquetipos como atractores extraños en psiques colectivas.\n\nLa traducción automática cuántica entrelaza lenguajes naturales mediante algoritmos de annealing cuántico, resolviendo ambigüedades polisémicas en tiempo exponencial.\n\nEn este babel cuántico, la torre de babel se reconstruye como un interferómetro de Mach-Zehnder lingüístico.",
-    "La física de la consciencia integra tubos neurales como procesadores cuánticos, donde microtúbulos citoplasmáticos soportan condensados bose-einstein de consciencia.\n\nLa teoría de la información integrada postula bits cuánticos como unidades fundamentales de experiencia subjetiva, con entropía de von Neumann midiendo complejidad fenoménica.\n\nLa neurociencia cuántica revela sinapsis como puertas lógicas probabilísticas, permitiendo computación paralela en redes neuronales estocásticas.\n\nEn este teatro mental, el libre albedrío emerge de indeterminismo cuántico, desafiando determinismo laplaciano en universos caóticos.",
-    "La cosmología fractal revela universos como conjuntos de Cantor multidimensionales, con constantes físicas emergiendo de simetrías gauge rotas.\n\nLa teoría de cuerdas heterótica compactifica dimensiones extras en variedades de Calabi-Yau, generando partículas elementales como modos vibracionales.\n\nLa materia oscura como axiones ultraligeros interactúa débilmente, explicando rotaciones galácticas mediante lentes gravitacionales.\n\nEn este cosmos delirante, agujeros de gusano einstein-rosen conectan universos paralelos, permitiendo viajes interestelares mediante warping espaciotemporal.",
-    "La química cuántica revela enlaces covalentes como resonancias de Lewis, con orbitales moleculares emergiendo de superposiciones atómicas.\n\nLa catálisis enzimática acelera reacciones mediante estados de transición estabilizados, con efectos túnel cuántico permitiendo reacciones a baja temperatura.\n\nLa nanotecnología molecular construye máquinas de Drexler mediante síntesis bottom-up, creando diamantes de carbono con precisión atómica.\n\nEn este laboratorio cuántico, el principio de Pauli excluye fermiones idénticos, generando superconductividad en temperaturas críticas bose-einsteinianas.",
-    "La matemática de la complejidad revela sistemas autoorganizados en bordes del caos, con autómatas celulares generando patrones emergentes.\n\nLa teoría de juegos cuántica extiende dilemas del prisionero a espacios de Hilbert, permitiendo estrategias entrelazadas no clásicas.\n\nLa geometría fractal mide dimensiones no enteras en conjuntos de Mandelbrot, con atractores extraños generando trayectorias caóticas.\n\nEn este paisaje matemático, la conjetura de Riemann conecta ceros no triviales con distribución de números primos en espacios hipercomplejos."
+    "¡Alerta en la torre del castillo! El Dragón Mecánico de tres cabezas ha lanzado un hechizo de letras mágicas que flotan por los pasillos.\n\nSolo el hechicero del teclado más rápido y concentrado del reino podrá descifrar los conjuros secretos para liberar a los duendecillos traviesos.\n\n¡Respira hondo, mantén tus dedos ágiles sobre la fila guía y desata la magia de cada tecla para conquistar la victoria dorada!",
+
+    "En el laboratorio del profesor Chiflado, una máquina de inventos comenzó a disparar rosquillas gigantes con forma de letras del abecedario.\n\nLos pequeños robots ayudantes corrían de un lado a otro esquivando donas voladoras, nubes de algodón de azúcar y ríos de batido de fresa.\n\nPara detener la máquina traviesa, debes teclear la clave secreta con precisión absoluta antes de que el laboratorio quede cubierto de chocolate caliente.",
+
+    "Una carrera de unicornios con propulsores a reacción está a punto de comenzar en el Gran Cañón de la Luna Roja.\n\nLos jueces espaciales están asombrados por la increíble agilidad con la que los pequeños pilotos sortean los asteroides de colores y los anillos de Saturno.\n\n¡Acelera a toda potencia, activa el turbo de tus dedos y cruza la línea de meta para levantar el gran trofeo de campeón de la galaxia!"
   ]
 };
-
