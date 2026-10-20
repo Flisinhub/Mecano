@@ -1,0 +1,15 @@
+{
+  "name": "mecano",
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build": "npx esbuild src/main.js --bundle --outfile=bundle.js --format=iife",
+    "test": "node test_harness.js && node test_edge_cases.js && node test_audiovisual_refactor.js && node test_mascot_phrases.js && node test_curriculum_and_certificate.js",
+    "generate-voices": "node scripts/generate_voices.js"
+  },
+  "dependencies": {
+    "msedge-tts": "^2.1.0"
+  }
+}

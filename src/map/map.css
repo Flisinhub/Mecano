@@ -1,0 +1,708 @@
+/* =============================================================================
+   🗺️ ADVENTURE MAP - SUPER MARIO WORLD STYLE OVERWORLD SELECTOR
+   ============================================================================= */
+
+/* Contenedor Modal de Pantalla Completa */
+.adventure-map-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(8px, 1.5vh, 18px);
+  box-sizing: border-box;
+  animation: mapModalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.adventure-map-modal.hidden {
+  display: none !important;
+}
+
+.adventure-map-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 12, 24, 0.92);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  z-index: 1;
+}
+
+/* Diálogo Flotante / Consola de Mapa estilo Overworld */
+.adventure-map-dialog {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1280px;
+  height: 100%;
+  max-height: min(840px, 94vh);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(175deg, rgba(15, 23, 42, 0.96) 0%, rgba(8, 12, 24, 0.99) 100%);
+  border: 2px solid rgba(255, 211, 42, 0.45);
+  border-radius: 28px;
+  box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.9), 0 0 30px rgba(255, 211, 42, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+  box-sizing: border-box;
+  transform: scale(1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+.adventure-map-modal.map-entering .adventure-map-dialog {
+  transform: scale(0.92);
+  opacity: 0;
+}
+
+.adventure-map-modal.map-leaving .adventure-map-dialog {
+  transform: scale(0.92);
+  opacity: 0;
+}
+
+.adventure-map-dialog.map-zooming-into-node {
+  transform: scale(1.12);
+  opacity: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
+}
+
+/* =============================================================================
+   1. Cabecera Overworld del Mapa
+   ============================================================================= */
+.map-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 18px;
+  background: rgba(0, 0, 0, 0.45);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
+  flex: 0 0 auto;
+  gap: 12px;
+}
+
+.map-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-header-badge {
+  background: rgba(255, 211, 42, 0.18);
+  border: 1px solid rgba(255, 211, 42, 0.4);
+  color: #ffd32a;
+  font-family: var(--font-dyslexic, 'Nunito', sans-serif);
+  font-weight: 900;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  text-transform: uppercase;
+}
+
+.map-header-title {
+  margin: 0;
+  font-family: var(--font-dyslexic, 'Fredoka', 'Nunito', sans-serif);
+  font-size: clamp(1.05rem, 1.4vw, 1.35rem);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+.map-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-stars-pill,
+.map-belt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #ffd32a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.map-belt-pill {
+  color: #e2e8f0;
+}
+
+.map-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+
+.map-close-btn:hover {
+  background: #ff4757;
+  border-color: #ff4757;
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* =============================================================================
+   2. Navegador de Islas Temáticas (Mario World Tabs)
+   ============================================================================= */
+.map-worlds-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 18px;
+  background: rgba(0, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 211, 42, 0.4) transparent;
+  flex: 0 0 auto;
+}
+
+.map-world-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  flex-shrink: 0;
+  user-select: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26), 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.map-world-tab:hover:not(.is-locked) {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--world-theme-color, #ffd32a);
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.map-world-tab.is-active {
+  background: linear-gradient(135deg, rgba(255, 211, 42, 0.28), rgba(15, 23, 42, 0.85));
+  border-color: var(--world-theme-color, #ffd32a);
+  box-shadow: 0 0 18px var(--world-theme-color, #ffd32a), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.map-world-tab.is-locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(0.7);
+}
+
+.world-tab-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.world-tab-texts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.world-tab-name {
+  font-family: var(--font-dyslexic, 'Nunito', sans-serif);
+  font-weight: 800;
+  font-size: 0.78rem;
+  color: #f1f5f9;
+  white-space: nowrap;
+}
+
+.world-tab-prog {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.map-world-tab.is-active .world-tab-prog {
+  color: #ffd32a;
+}
+
+/* =============================================================================
+   3. Tablero del Mundo con Escenario y SVG Trail
+   ============================================================================= */
+.adventure-map-board {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.map-board-background {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(10, 15, 30, 0.4), rgba(10, 15, 30, 0.7)), url('../../assets/maps/world_1_bg.jpg') center/cover no-repeat;
+  transition: background 0.4s ease;
+  z-index: 1;
+}
+
+.map-trail-svg {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  max-height: 520px;
+  overflow: visible;
+}
+
+/* =============================================================================
+   4. Fichas 3D de Nivel estilo Videojuego & Animaciones
+   ============================================================================= */
+.map-node {
+  cursor: pointer;
+  outline: none;
+}
+
+.map-node-hitbox {
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.map-node.is-locked .map-node-hitbox {
+  cursor: not-allowed;
+}
+
+.map-node-body {
+  transform-origin: 0px 0px;
+  transition: transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.22s ease;
+  pointer-events: none;
+}
+
+.map-node:hover:not(.is-locked) .map-node-body {
+  transform: scale(1.14);
+  filter: brightness(1.08) drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+}
+
+.map-node:hover .coin-token-3d {
+  animation-play-state: paused;
+}
+
+.map-node.is-selected .map-node-body {
+  transform: scale(1.18);
+  filter: brightness(1.12) drop-shadow(0 8px 18px rgba(255, 211, 42, 0.5));
+}
+
+.map-node.is-locked .map-node-body {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* 1. Moneda de Oro 3D (Niveles Superados) */
+.coin-token-3d {
+  transform-origin: center;
+  animation: coinFloat 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes coinFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3.5px);
+  }
+}
+
+/* 2. Plataforma de Lanzamiento Holográfica (Nivel Actual) */
+.launchpad-platform-3d {
+  transform-origin: center;
+}
+
+.launchpad-energy-ring.r1 {
+  fill: none;
+  stroke: #67e8f9;
+  animation: energyRingExpand 2.4s cubic-bezier(0.15, 0.85, 0.35, 1) infinite;
+}
+
+.launchpad-energy-ring.r2 {
+  fill: none;
+  stroke: #06b6d4;
+  animation: energyRingExpand 2.4s cubic-bezier(0.15, 0.85, 0.35, 1) infinite 1.2s;
+}
+
+@keyframes energyRingExpand {
+  0% {
+    r: 22px;
+    opacity: 0.9;
+    stroke-width: 2.8px;
+  }
+  100% {
+    r: 36px;
+    opacity: 0;
+    stroke-width: 0.5px;
+  }
+}
+
+/* 3. Placa de Piedra Antigua (Niveles Bloqueados) */
+.stone-token-3d {
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+/* 4. Ficha Desbloqueada */
+.unlocked-token-3d {
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+/* 5. Gran Castillo Medieval 3D (Examen) */
+.mario-castle-3d {
+  transform-origin: center;
+}
+
+.castle-aura-halo {
+  fill: none;
+  stroke: #ffd32a;
+  stroke-width: 3.5;
+  animation: castleAuraPulse 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes castleAuraPulse {
+  0% {
+    opacity: 0.25;
+    filter: drop-shadow(0 0 4px rgba(255, 211, 42, 0.3));
+  }
+  100% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 16px rgba(255, 211, 42, 0.8));
+  }
+}
+
+/* Banderas ondeando al viento en las torres */
+.castle-banner-wave {
+  transform-origin: 0 0;
+  animation: bannerWave 1.8s ease-in-out infinite;
+}
+
+.castle-banner-wave.b1 {
+  animation-delay: 0.1s;
+}
+
+.castle-banner-wave.b2 {
+  animation-delay: 0.4s;
+}
+
+.castle-banner-wave.b-center {
+  animation-delay: 0.2s;
+}
+
+@keyframes bannerWave {
+  0%, 100% {
+    transform: scaleX(1) skewY(0deg);
+  }
+  50% {
+    transform: scaleX(0.88) skewY(5deg);
+  }
+}
+
+/* =============================================================================
+   Capas de Profundidad Parallax & Efectos de Atmósfera
+   ============================================================================= */
+
+/* Nubes de fondo lentas */
+.drifting-clouds-back {
+  pointer-events: none;
+  animation: cloudDriftSlow 65s linear infinite;
+}
+
+/* Nubes frontales suaves */
+.drifting-clouds-front {
+  pointer-events: none;
+  animation: cloudDriftFast 38s linear infinite;
+}
+
+@keyframes cloudDriftSlow {
+  0% {
+    transform: translateX(-180px);
+  }
+  100% {
+    transform: translateX(1150px);
+  }
+}
+
+@keyframes cloudDriftFast {
+  0% {
+    transform: translateX(-240px);
+  }
+  100% {
+    transform: translateX(1200px);
+  }
+}
+
+/* Luciérnagas / Chispas mágicas a lo largo del sendero */
+.trail-sparkle-group {
+  pointer-events: none;
+}
+
+.sparkle-dot {
+  animation: fireflySparkle 2s ease-in-out infinite alternate;
+}
+
+.sparkle-anim-1 { animation-duration: 1.8s; }
+.sparkle-anim-2 { animation-duration: 2.3s; }
+.sparkle-anim-3 { animation-duration: 2.7s; }
+.sparkle-anim-4 { animation-duration: 2.1s; }
+
+.sparkle-star {
+  animation: fireflySparkle 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes fireflySparkle {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.7) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.4) translateY(-6px);
+    filter: drop-shadow(0 0 6px #ffd32a);
+  }
+}
+
+/* Halo de pulso para nodo activo */
+.node-pulse-aura {
+  fill: none;
+  stroke: #00cec9;
+  stroke-width: 3.5;
+  stroke-dasharray: 8 6;
+  animation: activeAuraSpin 4s linear infinite;
+}
+
+@keyframes activeAuraSpin {
+  0% { transform: rotate(0deg); opacity: 0.8; }
+  50% { opacity: 0.4; }
+  100% { transform: rotate(360deg); opacity: 0.8; }
+}
+
+.castle-pulse-aura {
+  fill: none;
+  stroke: #ffd32a;
+  stroke-width: 4;
+  animation: castleGlowPulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes castleGlowPulse {
+  0% { opacity: 0.4; filter: drop-shadow(0 0 4px #ffd32a); }
+  100% { opacity: 1; filter: drop-shadow(0 0 16px #ffd32a); }
+}
+
+/* Mascota Roby Saltarín sobre el Nivel Actual */
+.mario-roby-wrapper {
+  pointer-events: none;
+  animation: marioRobyJump 1.25s ease-in-out infinite;
+  transform-origin: 0 18px;
+}
+
+.mario-roby-sprite {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.65));
+}
+
+@keyframes marioRobyJump {
+  0%, 100% {
+    transform: translateY(0) scale(1, 1);
+  }
+  35% {
+    transform: translateY(-16px) scale(0.94, 1.06);
+  }
+  70% {
+    transform: translateY(0) scale(1.08, 0.92);
+  }
+}
+
+/* =============================================================================
+   5. Tarjeta de Curso / Lanzador de Nivel (Course Card)
+   ============================================================================= */
+.map-course-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(8, 12, 24, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1.5px solid rgba(255, 211, 42, 0.35);
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  gap: 16px;
+  flex: 0 0 auto;
+}
+
+.course-card-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.course-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #00cec9, #0984e3);
+  border: 2px solid #ffffff;
+  color: #fff;
+  font-family: var(--font-dyslexic, 'Fredoka', 'Nunito', sans-serif);
+  font-weight: 900;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.course-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.course-title {
+  margin: 0;
+  font-family: var(--font-dyslexic, 'Fredoka', 'Nunito', sans-serif);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #fff;
+}
+
+.course-desc {
+  margin: 2px 0 0 0;
+  font-size: 0.84rem;
+  color: #94a3b8;
+  transition: color 0.2s ease;
+}
+
+.course-desc.desc-locked-alert {
+  color: #ff7675;
+  font-weight: 800;
+  animation: textAlertPulse 0.4s infinite alternate;
+}
+
+@keyframes textAlertPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.02); }
+}
+
+.course-card-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.course-keys-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.course-key-chip {
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffd32a;
+  font-weight: 900;
+  font-size: 0.85rem;
+}
+
+.course-stars-rating {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.course-stars-rating .star-off {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.course-card-right {
+  display: flex;
+  align-items: center;
+}
+
+.course-launch-btn {
+  padding: 10px 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2ed573, #10ac84);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  font-family: var(--font-dyslexic, 'Fredoka', 'Nunito', sans-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(46, 213, 115, 0.45);
+  transition: all 0.18s ease;
+}
+
+.course-launch-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(46, 213, 115, 0.65);
+}
+
+.course-launch-btn.is-disabled {
+  background: #334155;
+  border-color: #475569;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* =============================================================================
+   6. Botón Táctil de Acceso al Mapa en la Barra Superior
+   ============================================================================= */
+.header-tool-btn.world-map-header-btn {
+  background: linear-gradient(135deg, rgba(255, 211, 42, 0.2), rgba(255, 118, 117, 0.18));
+  border: 1.5px solid #ffd32a;
+  color: #ffd32a;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 10px rgba(255, 211, 42, 0.25);
+  transition: all 0.18s ease;
+}
+
+.header-tool-btn.world-map-header-btn:hover {
+  background: linear-gradient(135deg, #ffd32a, #ff9f43);
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(255, 211, 42, 0.55);
+  transform: translateY(-1.5px);
+}
+
+@keyframes mapModalFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 900px) {
+  .map-course-card {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 8px 14px;
+  }
+  .course-card-center {
+    display: none;
+  }
+}

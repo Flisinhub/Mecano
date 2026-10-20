@@ -1,0 +1,12 @@
+# Dependencias
+node_modules/
+
+# Archivos de audio y vídeo pesados
+*.mp4
+temp_audio/
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+Desktop.ini
+

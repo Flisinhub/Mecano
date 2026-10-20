@@ -1,0 +1,483 @@
+/* ==========================================================================
+   mascot.css - Interactive Mascot, Procedural Animation & Emotional AI Styles
+   Mecano Educational Typing Game (M3)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Mascot Container & Layout
+   -------------------------------------------------------------------------- */
+.mascot-container {
+  position: relative;
+  width: 220px;
+  height: 250px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  user-select: none;
+  pointer-events: auto;
+  perspective: 1000px;
+}
+
+.mascot-stage {
+  position: relative;
+  transform-origin: 50% 85%;
+  will-change: transform;
+}
+
+/* Base Mascot Avatar Layer */
+.mascot-avatar {
+  position: relative;
+  width: 180px;
+  height: 200px;
+  margin: 0 auto;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  transform-origin: 50% 85%;
+  will-change: transform, filter;
+  /* 3px Sticker Outline & Drop Shadow */
+  filter: drop-shadow(0 0 1px #ffffff)
+          drop-shadow(0 0 2px #ffffff)
+          drop-shadow(0 0 3px #ffffff)
+          drop-shadow(0 8px 16px rgba(15, 23, 42, 0.35));
+  transition: filter 0.3s ease;
+}
+
+/* Mouth element for procedural lip-sync */
+.mascot-mouth {
+  position: absolute;
+  bottom: 28%;
+  left: 50%;
+  width: 28px;
+  height: 14px;
+  margin-left: -14px;
+  background: #2c3e50;
+  border-radius: 0 0 14px 14px;
+  border: 2px solid #ffffff;
+  transform-origin: 50% 0%;
+  will-change: transform;
+  transition: transform 0.05s ease-out;
+  overflow: hidden;
+}
+
+.mascot-mouth::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 3px;
+  right: 3px;
+  height: 6px;
+  background: #ff6b81;
+  border-radius: 6px 6px 0 0;
+}
+
+/* --------------------------------------------------------------------------
+   2. FSM Emotional State Visuals & Animations
+   -------------------------------------------------------------------------- */
+
+.mascot-stage {
+  transform: none !important;
+  animation: none !important;
+}
+
+/* IDLE: Continuous resting breathing on avatar only (pure gentle vertical, zero rotation) */
+.mascot-avatar.mascot-idle,
+.mascot-avatar.mascot-state-idle,
+.mascot-state-idle .mascot-avatar,
+.mascot-idle .mascot-avatar {
+  animation: mascotBreathing 2.6s ease-in-out infinite;
+}
+
+@keyframes mascotBreathing {
+  0%, 100% {
+    transform: translateY(0px) scale(1.0, 1.0);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.02, 0.98);
+  }
+}
+
+/* FLOW_DANCE: Rhythmic joyful bounce on avatar only */
+.mascot-avatar.mascot-flow-dance,
+.mascot-avatar.mascot-state-flow-dance,
+.mascot-state-flow-dance .mascot-avatar,
+.mascot-flow-dance .mascot-avatar {
+  animation: mascotDanceBounce 0.55s ease-in-out infinite alternate;
+}
+
+.mascot-state-flow-dance .mascot-avatar,
+.mascot-flow-dance .mascot-avatar,
+.mascot-avatar.mascot-state-flow-dance {
+  filter: drop-shadow(0 0 6px #ffd700)
+          drop-shadow(0 0 16px rgba(255, 215, 0, 0.8))
+          drop-shadow(0 0 24px rgba(78, 205, 196, 0.6))
+          drop-shadow(0 8px 18px rgba(243, 156, 18, 0.45));
+}
+
+@keyframes mascotDanceBounce {
+  0% {
+    transform: translateY(0px) scale(1.04, 0.96);
+  }
+  100% {
+    transform: translateY(-10px) scale(0.96, 1.04);
+  }
+}
+
+/* HELPER_POINTING: Alert forward lean with gentle lightbulb bounce */
+.mascot-stage.mascot-state-helper-pointing,
+.mascot-stage.mascot-helper-pointing,
+.mascot-avatar-wrapper.mascot-state-helper-pointing,
+.mascot-avatar-wrapper.mascot-helper-pointing,
+.mascot-avatar.mascot-helper-pointing,
+.mascot-avatar.mascot-state-helper-pointing,
+.mascot-state-helper-pointing .mascot-avatar,
+.mascot-helper-pointing .mascot-avatar {
+  animation: mascotHelperBounce 1.1s ease-in-out infinite;
+}
+
+.mascot-state-helper-pointing .mascot-avatar,
+.mascot-avatar.mascot-state-helper-pointing {
+  filter: drop-shadow(0 0 6px #4ecdc4)
+          drop-shadow(0 0 14px rgba(78, 205, 196, 0.7))
+          drop-shadow(0 6px 12px rgba(15, 23, 42, 0.35));
+}
+
+@keyframes mascotHelperBounce {
+  0%, 100% {
+    transform: translateY(-2px) rotate(3deg) scale(1.0, 1.0);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-3deg) scale(1.03, 0.98);
+  }
+}
+
+/* SLEEPY: Inactivity state with slow drop & floating Zzz */
+.mascot-stage.mascot-state-sleepy,
+.mascot-stage.mascot-sleepy,
+.mascot-avatar-wrapper.mascot-state-sleepy,
+.mascot-avatar-wrapper.mascot-sleepy,
+.mascot-avatar.mascot-sleepy,
+.mascot-avatar.mascot-state-sleepy,
+.mascot-state-sleepy .mascot-avatar,
+.mascot-sleepy .mascot-avatar {
+  transform: translateY(12px) scale(0.96, 0.94);
+  transition: transform 0.8s ease-in-out;
+  opacity: 0.90;
+}
+
+.mascot-sleepy-zzz {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+  color: #a29bfe;
+  pointer-events: none;
+  animation: mascotZzzFloat 2.4s ease-in-out infinite;
+}
+
+@keyframes mascotZzzFloat {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(16px, -35px) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* HIGH_FIVE_WAIT: Excited victory hop awaiting Spacebar */
+.mascot-stage.mascot-state-high-five-wait,
+.mascot-stage.mascot-high-five-wait,
+.mascot-avatar-wrapper.mascot-state-high-five-wait,
+.mascot-avatar-wrapper.mascot-high-five-wait,
+.mascot-avatar.mascot-high-five-wait,
+.mascot-avatar.mascot-state-high-five-wait,
+.mascot-state-high-five-wait .mascot-avatar,
+.mascot-high-five-wait .mascot-avatar {
+  animation: mascotHighFiveWait 0.65s ease-in-out infinite alternate;
+}
+
+@keyframes mascotHighFiveWait {
+  0% {
+    transform: translateY(0px) scale(1.04, 0.96);
+  }
+  100% {
+    transform: translateY(-20px) scale(0.95, 1.08);
+  }
+}
+
+/* CELEBRATING: Victory spin and celebration bounce */
+.mascot-stage.mascot-state-celebrating,
+.mascot-stage.mascot-celebrating,
+.mascot-avatar-wrapper.mascot-state-celebrating,
+.mascot-avatar-wrapper.mascot-celebrating,
+.mascot-avatar.mascot-celebrating,
+.mascot-avatar.mascot-state-celebrating,
+.mascot-state-celebrating .mascot-avatar,
+.mascot-celebrating .mascot-avatar {
+  animation: mascotCelebrationSpin 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
+}
+
+@keyframes mascotCelebrationSpin {
+  0% {
+    transform: translateY(0px) rotate(0deg) scale(1.0);
+  }
+  40% {
+    transform: translateY(-38px) rotate(180deg) scale(1.2);
+  }
+  75% {
+    transform: translateY(-12px) rotate(360deg) scale(1.1);
+  }
+  100% {
+    transform: translateY(0px) rotate(360deg) scale(1.06);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Comic Speech Bubble
+   -------------------------------------------------------------------------- */
+.mascot-speech-bubble {
+  display: none !important; /* Unified Cockpit embeds speech inside #mascot-bubble pod */
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 280px;
+  background: #ffffff;
+  border: 3px solid #2c3e50;
+  border-radius: 18px;
+  padding: 12px 18px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18),
+              0 3px 0 #2c3e50;
+  font-family: 'Comic Sans MS', 'Chalkboard SE', 'OpenDyslexic', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #2c3e50;
+  text-align: center;
+  z-index: 100;
+  cursor: pointer;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mascot-speech-bubble.bubble-hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(10px) scale(0.92);
+  pointer-events: none;
+}
+
+/* Comic bubble triangular tail pointing to Roby */
+.mascot-speech-bubble .bubble-tail {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  margin-left: -10px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 14px solid #2c3e50;
+}
+
+.mascot-speech-bubble .bubble-tail::after {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid #ffffff;
+}
+
+/* Key Highlight Badges inside Speech Bubble */
+.bubble-key-highlight {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 0 2px;
+  border-radius: 6px;
+  font-weight: 800;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+  animation: keyBadgePop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes keyBadgePop {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1.0) translateY(-1px); opacity: 1; }
+}
+
+/* Bubble Emotion Variants */
+.bubble-emotion-victory {
+  border-color: #f1c40f;
+  box-shadow: 0 8px 24px rgba(241, 196, 15, 0.35), 0 3px 0 #f1c40f;
+}
+
+.bubble-emotion-error {
+  border-color: #e74c3c;
+  box-shadow: 0 8px 24px rgba(231, 76, 60, 0.25), 0 3px 0 #e74c3c;
+}
+
+.bubble-emotion-thinking {
+  border-color: #3498db;
+  box-shadow: 0 8px 24px rgba(52, 152, 219, 0.25), 0 3px 0 #3498db;
+}
+
+.bubble-emotion-sleepy {
+  border-color: #9b59b6;
+  background: #fdfefe;
+}
+
+/* Voice Waveform Indicator */
+.voice-wave-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.voice-wave-bar {
+  width: 4px;
+  height: 6px;
+  background: #2ed573;
+  border-radius: 2px;
+  transition: height 0.08s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   4. Accessory Sockets
+   -------------------------------------------------------------------------- */
+.accessory-socket {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.accessory-socket.socket-head {
+  top: 7%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  z-index: 15;
+}
+
+.accessory-socket.socket-eyes {
+  top: 39%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+}
+
+.accessory-socket.socket-neck {
+  top: 74%;
+  left: 50%;
+  transform: translate(-50%, 0);
+  z-index: 10;
+}
+
+.accessory-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  animation: accessorySettle 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes accessorySettle {
+  0% { transform: scale(0.4) translateY(-12px); opacity: 0; }
+  100% { transform: scale(1.0) translateY(0); opacity: 1; }
+}
+
+/* Specific accessory SVG adjustments */
+.acc-svg-cap {
+  transform: translateY(8px);
+}
+
+.acc-svg-wizard {
+  transform: translateY(14px);
+}
+
+.acc-svg-crown {
+  transform: translateY(12px);
+}
+
+.acc-svg-nerd,
+.acc-svg-star,
+.acc-svg-cool {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Holographic Circular Portal for 3D Pixar Mascot (Seamless Borderless Blend)
+   ========================================================================== */
+.hologram-portal-frame {
+  position: relative;
+  width: clamp(100px, 12.5vh, 130px);
+  height: clamp(100px, 12.5vh, 130px);
+  margin: 0 auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Radial mask so the #0F172A background seamlessly dissolves into the cockpit */
+  mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 98%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 98%);
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.15) 0%, transparent 75%);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.hologram-portal-frame:hover {
+  transform: scale(1.05);
+}
+
+.hologram-portal-frame.has-canvas #mascot-avatar {
+  display: none !important;
+}
+
+.mascot-canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hologram-energy-ring {
+  position: absolute;
+  inset: 1px;
+  border-radius: 50%;
+  border: 2px solid rgba(34, 211, 238, 0.4);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.55), inset 0 0 12px rgba(34, 211, 238, 0.3);
+  pointer-events: none;
+  animation: energyRingPulse 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes energyRingPulse {
+  0% {
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.4), inset 0 0 8px rgba(34, 211, 238, 0.2);
+    transform: scale(0.98);
+  }
+  100% {
+    border-color: rgba(34, 211, 238, 0.65);
+    box-shadow: 0 0 22px rgba(34, 211, 238, 0.8), inset 0 0 16px rgba(34, 211, 238, 0.4);
+    transform: scale(1.02);
+  }
+}

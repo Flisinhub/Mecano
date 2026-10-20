@@ -1,0 +1,452 @@
+/**
+ * audio.css - Accessibility & Procedural Audio Styles for Mecano
+ * 
+ * Fulfills Requirement R5 and PROJECT.md specifications:
+ * - Accessibility Panel modal, chunky sliders, toggles and friendly child-style UI.
+ * - Dyslexia-friendly typography (.font-dyslexic, .font-opendyslexic, .font-comicsans).
+ * - High-Contrast Mode (WCAG AAA >= 7:1) with pitch black background and neon palette.
+ */
+
+/* ==========================================================================
+   1. Typography for Dyslexia & Readability
+   ========================================================================== */
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: local('OpenDyslexic'), local('OpenDyslexic-Regular'),
+       url('../assets/OpenDyslexic-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+body.font-dyslexic,
+body.font-opendyslexic,
+.font-dyslexic,
+.font-opendyslexic {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', 'Comic Neue', sans-serif !important;
+  letter-spacing: 0.06em !important;
+  line-height: 1.6 !important;
+  word-spacing: 0.1em !important;
+}
+
+body.font-comicsans,
+.font-comicsans {
+  font-family: 'Comic Sans MS', 'Comic Neue', 'Fredoka', cursive, sans-serif !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.55 !important;
+}
+
+/* Ensure key labels remain legible under dyslexia typography */
+body.font-dyslexic .key,
+body.font-opendyslexic .key,
+body.font-comicsans .key {
+  font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   2. Accessibility Panel (Modal & Controls)
+   ========================================================================== */
+
+.a11y-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 14, 34, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 16px;
+  box-sizing: border-box;
+  opacity: 1;
+  transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.a11y-backdrop.hidden {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.a11y-panel {
+  background: linear-gradient(145deg, #1f2444, #161a33);
+  border: 3px solid #4a5482;
+  border-radius: 24px;
+  width: min(540px, 94vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: #f7f9fc;
+  overflow: hidden;
+  animation: a11yPanelPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes a11yPanelPop {
+  0% {
+    transform: scale(0.92) translateY(12px);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.a11y-header {
+  padding: 18px 24px;
+  background: linear-gradient(90deg, #ff9f43, #ff6b81);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.a11y-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.a11y-close-btn {
+  background: rgba(0, 0, 0, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  font-size: 1.2rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.a11y-close-btn:hover {
+  background: #ff4757;
+  transform: scale(1.1) rotate(90deg);
+  border-color: #ffffff;
+}
+
+.a11y-body {
+  padding: 22px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Individual Control Group */
+.a11y-group {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: background 0.2s ease;
+}
+
+.a11y-group:focus-within {
+  border-color: #ff9f43;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.a11y-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.a11y-label-row label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.a11y-badge {
+  background: #ff9f43;
+  color: #1a1a2e;
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.02em;
+}
+
+.a11y-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Accessible Chunky Sliders */
+.a11y-slider-row input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 14px;
+  border-radius: 7px;
+  background: #2b325c;
+  outline: none;
+  cursor: pointer;
+  border: 2px solid #4a5482;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.a11y-slider-row input[type="range"]:focus-visible {
+  outline: 3px solid #ff9f43;
+  outline-offset: 2px;
+}
+
+.a11y-slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd32a, #ff9f43);
+  border: 3px solid #ffffff;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.a11y-slider-row input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.18);
+}
+
+.a11y-slider-row input[type="range"]::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd32a, #ff9f43);
+  border: 3px solid #ffffff;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.a11y-mini-btn {
+  background: #3c4573;
+  color: #ffffff;
+  border: 2px solid #5865a3;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.a11y-mini-btn:hover {
+  background: #5865a3;
+  border-color: #ffd32a;
+  transform: translateY(-2px);
+}
+
+/* Radio Button Group for Dyslexia Fonts */
+.a11y-btn-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.a11y-toggle-btn {
+  background: #252b4e;
+  border: 2px solid #4a5482;
+  color: #c7d1e8;
+  border-radius: 12px;
+  padding: 10px 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.a11y-toggle-btn:hover {
+  background: #323a6b;
+  color: #ffffff;
+  border-color: #ffd32a;
+}
+
+.a11y-toggle-btn.active {
+  background: linear-gradient(135deg, #2ed573, #1e90ff);
+  border-color: #ffffff;
+  color: #ffffff;
+  box-shadow: 0 3px 8px rgba(46, 213, 115, 0.35);
+  font-weight: 800;
+}
+
+/* Switch Rows */
+.a11y-switch-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.a11y-switch-title {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.a11y-switch-sub {
+  font-size: 0.78rem;
+  color: #9ea9c6;
+  margin-top: 2px;
+}
+
+.a11y-switch-btn {
+  background: #394066;
+  border: 2px solid #555f94;
+  color: #c0c8e0;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-width: 62px;
+  text-align: center;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.a11y-switch-btn.on {
+  background: #2ed573;
+  border-color: #ffffff;
+  color: #102e18;
+  box-shadow: 0 0 12px rgba(46, 213, 115, 0.6);
+  transform: scale(1.05);
+}
+
+.a11y-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 6px;
+}
+
+.a11y-reset-btn {
+  background: transparent;
+  border: 1px solid #4a5482;
+  color: #9ea9c6;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.a11y-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: #ff6b81;
+}
+
+/* ==========================================================================
+   3. High-Contrast Accessibility Mode (WCAG AAA >= 7:1)
+   ========================================================================== */
+
+body.high-contrast,
+.high-contrast {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Surfaces and Layouts in High Contrast */
+body.high-contrast .game-container,
+body.high-contrast .overlay,
+body.high-contrast .game-layout,
+body.high-contrast .mascot-stage,
+body.high-contrast .start-screen,
+body.high-contrast .start-box {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .top-game-header,
+body.high-contrast .stat-badge,
+body.high-contrast .mascot-bubble,
+body.high-contrast .keyboard-container,
+body.high-contrast .a11y-panel {
+  background: #0a0c1a !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .header-tool-btn,
+body.high-contrast .option-btn,
+body.high-contrast .a11y-toggle-btn,
+body.high-contrast .a11y-mini-btn,
+body.high-contrast .a11y-switch-btn {
+  background: #000000 !important;
+  border: 2px solid #ffffff !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .a11y-switch-btn.on,
+body.high-contrast .a11y-toggle-btn.active {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 3px solid #ffffff !important;
+  font-weight: 900 !important;
+}
+
+/* Saturated Neon Finger Palette for Keyboard and Hands (WCAG AAA Contrast) */
+body.high-contrast {
+  --color-pinky: #ff3366 !important;       /* Neon Coral */
+  --color-ring: #ff9900 !important;        /* Neon Orange */
+  --color-middle: #ffff00 !important;      /* Neon Yellow */
+  --color-index-left: #00ff66 !important;  /* Neon Green */
+  --color-index-right: #00ffff !important; /* Neon Cyan */
+  --color-thumb: #cc66ff !important;       /* Neon Purple */
+}
+
+/* Keyboard Keys High Contrast */
+body.high-contrast .key {
+  background: #111122 !important;
+  color: #ffffff !important;
+  border: 3px solid #ffffff !important;
+  box-shadow: none !important;
+}
+
+body.high-contrast .key-homemark::after {
+  background: #ffff00 !important;
+  box-shadow: 0 0 4px #ffffff !important;
+}
+
+/* Target Key: Neon Yellow with deep black text */
+body.high-contrast .key--target {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 4px solid #ffffff !important;
+  font-weight: 900 !important;
+  box-shadow: 0 0 16px #ffff00 !important;
+}
+
+/* Wrong Key Flash: Neon Red with deep white text */
+body.high-contrast .key--wrong,
+body.high-contrast .key--wrong-soft {
+  background: #ff0055 !important;
+  color: #ffffff !important;
+  border: 4px solid #ffffff !important;
+  box-shadow: 0 0 16px #ff0055 !important;
+}
+
+/* Ghost Hands pads in High Contrast */
+body.high-contrast .finger-tip-pad.is-active-finger {
+  filter: drop-shadow(0 0 8px #ffffff) !important;
+}

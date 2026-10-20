@@ -1,0 +1,207 @@
+/**
+ * vfx.css - Visual Effects, Lighting Shaders, Sticker Outlines & Animations for Mecano
+ * Fulfills Requirement R2 and PROJECT.md specifications.
+ */
+
+/* ==========================================================================
+   1. Live Scene Container & Composited Layer Stack
+   ========================================================================== */
+
+#live-scene-container,
+.live-scene-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Layer 0: Hardware-accelerated Parallax Canvas */
+#parallax-canvas,
+.parallax-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  display: block;
+}
+
+/* Layer 1: Ambient Particles (Bubbles, Golden Stars, Motes) */
+#ambient-particles-canvas,
+.ambient-particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  display: block;
+}
+
+/* Layer 2: Fever Mode Dynamic Radiant Lighting Filter */
+#fever-lighting-overlay,
+.fever-lighting-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  mix-blend-mode: screen;
+}
+
+/* Layer 4: Magic Arcs & Projectile Trails Canvas (above UI shell background) */
+#projectile-vfx-canvas,
+.projectile-vfx-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 35;
+  pointer-events: none;
+  display: block;
+}
+
+/* ==========================================================================
+   2. Fever Mode Radiant Lighting Filter
+   ========================================================================== */
+
+.fever-active #fever-lighting-overlay,
+#fever-lighting-overlay.active {
+  opacity: 1;
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(255, 215, 0, 0.24) 0%,
+    rgba(255, 107, 129, 0.16) 55%,
+    rgba(155, 89, 182, 0.32) 100%
+  );
+  box-shadow: 
+    inset 0 0 90px 30px rgba(255, 215, 0, 0.55),
+    inset 0 0 160px rgba(255, 107, 129, 0.35);
+  animation: feverPulse 1.4s ease-in-out infinite alternate;
+}
+
+@keyframes feverPulse {
+  0% {
+    filter: brightness(1.0) saturate(1.2);
+    box-shadow: 
+      inset 0 0 80px 25px rgba(255, 215, 0, 0.45),
+      inset 0 0 140px rgba(255, 107, 129, 0.25);
+  }
+  100% {
+    filter: brightness(1.18) saturate(1.45);
+    box-shadow: 
+      inset 0 0 110px 40px rgba(255, 215, 0, 0.65),
+      inset 0 0 180px rgba(255, 107, 129, 0.45);
+  }
+}
+
+/* ==========================================================================
+   3. Unified 3px Sticker Outline & Drop-Shadow Filter
+   ========================================================================== */
+
+/* High-fidelity SVG dilation filter with drop-shadow */
+.sticker-sprite,
+.vfx-sticker,
+.mascot-avatar {
+  filter: drop-shadow(0 0 1px #ffffff) 
+          drop-shadow(0 0 2px #ffffff) 
+          drop-shadow(0 0 3px #ffffff) 
+          drop-shadow(0 4px 6px rgba(15, 17, 35, 0.35));
+  will-change: transform, filter;
+  transition: filter 0.25s ease;
+}
+
+/* When SVG #sticker-outline-3px is mounted in DOM */
+@supports (filter: url('#sticker-outline-3px')) {
+  .sticker-sprite,
+  .vfx-sticker,
+  .mascot-avatar {
+    filter: url('#sticker-outline-3px');
+  }
+}
+
+/* Additional sticker elevation on hover or focus */
+.sticker-sprite:hover,
+.mascot-avatar:hover {
+  filter: drop-shadow(0 0 2px #ffffff) 
+          drop-shadow(0 0 4px #ffd32a) 
+          drop-shadow(0 6px 12px rgba(15, 17, 35, 0.45));
+}
+
+/* ==========================================================================
+   4. Damped Squash & Stretch CSS Fallback Keyframes
+   ========================================================================== */
+
+@keyframes squashHarmonicImpact {
+  0% {
+    transform: scale(1.0, 1.0);
+  }
+  18% {
+    transform: scale(1.22, 0.82);
+  }
+  42% {
+    transform: scale(0.88, 1.14);
+  }
+  68% {
+    transform: scale(1.06, 0.94);
+  }
+  85% {
+    transform: scale(0.98, 1.02);
+  }
+  100% {
+    transform: scale(1.0, 1.0);
+  }
+}
+
+@keyframes squashHarmonicHop {
+  0% {
+    transform: scale(1.0, 1.0) translateY(0);
+  }
+  20% {
+    transform: scale(1.14, 0.88) translateY(2px);
+  }
+  50% {
+    transform: scale(0.92, 1.10) translateY(-10px);
+  }
+  75% {
+    transform: scale(1.04, 0.96) translateY(0);
+  }
+  100% {
+    transform: scale(1.0, 1.0) translateY(0);
+  }
+}
+
+.vfx-squash-impact {
+  transform-origin: 50% 85%;
+  animation: squashHarmonicImpact 0.38s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.vfx-squash-hop {
+  transform-origin: 50% 90%;
+  animation: squashHarmonicHop 0.32s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* ==========================================================================
+   5. Key Target Glow & Pulse Accents
+   ========================================================================== */
+
+.vfx-target-pulse {
+  animation: targetPulseGlow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes targetPulseGlow {
+  0% {
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.5), inset 0 0 2px rgba(255, 255, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 16px rgba(255, 211, 42, 0.85), inset 0 0 8px rgba(255, 211, 42, 0.6);
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "voice": "es-ES-AlvaroNeural",
+  "generatedAt": "2026-10-19T08:47:21.592Z",
+  "phrases": {
+    "welcome": {
+      "file": "assets/audio/voices/welcome.mp3",
+      "text": "¡Hola, supermecanógrafo! Soy Roby, tu compañero de aventuras. ¡Vamos a aprender jugando!",
+      "durationMs": 0
+    },
+    "hand_position": {
+      "file": "assets/audio/voices/hand_position.mp3",
+      "text": "Coloca tus dedos índices en las teclas F y J. Tienen pequeñas marcas para descansar las manos.",
+      "durationMs": 0
+    },
+    "error_cheer_1": {
+      "file": "assets/audio/voices/error_cheer_1.mp3",
+      "text": "¡No te preocupes! Equivocarse es el truco secreto para aprender. ¡Sigue así!",
+      "durationMs": 0
+    },
+    "error_cheer_2": {
+      "file": "assets/audio/voices/error_cheer_2.mp3",
+      "text": "¡Respira hondo y busca la tecla iluminada! ¡Tú tienes superpoderes!",
+      "durationMs": 0
+    },
+    "streak_10": {
+      "file": "assets/audio/voices/streak_10.mp3",
+      "text": "¡Increíble racha de diez aciertos! ¡Tus dedos se mueven como el viento!",
+      "durationMs": 0
+    },
+    "streak_20": {
+      "file": "assets/audio/voices/streak_20.mp3",
+      "text": "¡Sensacional! ¡Veinte aciertos seguidos! ¡Estás en modo súper estrella!",
+      "durationMs": 0
+    },
+    "level_complete_3stars": {
+      "file": "assets/audio/voices/level_complete_3stars.mp3",
+      "text": "¡Misión cumplida! ¡Tres estrellas perfectas! ¡Choca esos cinco!",
+      "durationMs": 0
+    },
+    "level_complete_2stars": {
+      "file": "assets/audio/voices/level_complete_2stars.mp3",
+      "text": "¡Muy bien hecho! ¡Has superado el desafío con dos estrellas fantásticas!",
+      "durationMs": 0
+    },
+    "level_complete_1star": {
+      "file": "assets/audio/voices/level_complete_1star.mp3",
+      "text": "¡Bien jugado! ¡Has completado el nivel! ¡Cada día eres más rápido!",
+      "durationMs": 0
+    },
+    "high_five": {
+      "file": "assets/audio/voices/high_five.mp3",
+      "text": "¡Choca esos cinco! ¡Pulsa la barra espaciadora para celebrar!",
+      "durationMs": 0
+    }
+  }
+}

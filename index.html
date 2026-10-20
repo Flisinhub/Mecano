@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mecano Aventura Kids - Aprende Mecanografía</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="src/vfx/vfx.css" />
+  <link rel="stylesheet" href="src/mascot/mascot.css" />
+  <link rel="stylesheet" href="src/keyboard/keyboard.css" />
+  <link rel="stylesheet" href="src/audio/audio.css" />
+  <link rel="stylesheet" href="src/map/map.css" />
+</head>
+<body>
+  <div class="game-container">
+    <div class="background-fallback"></div>
+
+    <!-- Living Scene Container: Multi-layer Parallax & Particle VFX Canvas Stack -->
+    <div id="live-scene-container" class="live-scene-container">
+      <canvas id="parallax-canvas" class="parallax-canvas"></canvas>
+      <canvas id="ambient-particles-canvas" class="ambient-particles-canvas"></canvas>
+      <div id="fever-lighting-overlay" class="fever-lighting-overlay"></div>
+      <canvas id="projectile-vfx-canvas" class="projectile-vfx-canvas"></canvas>
+    </div>
+
+    <div class="overlay">
+      <!-- Ambient Backlight: Aureola reactiva difusa detrás del chasis -->
+      <div class="cockpit-ambient-backlight" id="cockpit-ambient-backlight"></div>
+
+      <!-- Chasis Único Continuo: Unified Arcade Cockpit -->
+      <main class="mecano-cockpit" id="mecano-cockpit" role="main" aria-label="Consola de Mecanografía Mecano">
+        <!-- Barra superior accesible: Nivel, Estadísticas y Opciones en Dynamic Island -->
+        <header class="top-game-header cockpit-dynamic-island" id="top-game-header" role="banner">
+        <div class="level-indicator-group">
+          <span class="level-star-icon">⭐</span>
+          <div class="level-texts">
+            <span class="level-pill-tag">NIVEL <span id="level">1</span></span>
+            <span class="level-title-display" id="level-title-display">Los Índices en Casa (F y J)</span>
+          </div>
+        </div>
+
+        <div class="header-stats-wrap">
+          <div class="stat-badge stat-words-badge" title="Palabras completadas">
+            <span class="stat-badge-icon">🎯</span>
+            <span class="stat-badge-val"><span id="words-count">0</span>/<span id="words-goal">8</span></span>
+          </div>
+
+          <div class="stat-badge stat-ppm-badge" id="stat-ppm-badge" title="Pulsaciones por minuto">
+            <span class="stat-badge-icon">⚡</span>
+            <span class="stat-badge-val"><span id="ppm">0</span> <small>PPM</small></span>
+          </div>
+
+          <div class="combo-counter hidden" id="combo-counter" title="Racha de aciertos seguidos">🔥 Racha <span id="combo-number">0</span></div>
+
+          <div class="stat-badge stat-accuracy-badge" title="Porcentaje de acierto">
+            <span class="stat-badge-icon">✨</span>
+            <span class="stat-badge-val"><span id="accuracy">100</span>%</span>
+          </div>
+
+          <div class="stat-badge stat-errors-badge" title="Errores cometidos">
+            <span class="stat-badge-icon">🛡️</span>
+            <span class="stat-badge-val" id="errors">0</span>
+          </div>
+        </div>
+
+        <div class="header-tools">
+          <button id="world-map-btn" class="header-tool-btn world-map-header-btn" title="Ver el Mapa de Aventuras estilo Super Mario World" aria-label="Abrir Mapa de Mundos">🗺️ Mapa</button>
+          <button id="diploma-btn" class="header-tool-btn diploma-header-btn" title="Ver mi Título Oficial de Mecanografía" aria-label="Abrir mi diploma">🎓 Mi Título</button>
+          <button id="lesson-video-btn" class="header-tool-btn lesson-video-header-btn" title="Ver vídeo explicativo de esta lección" aria-label="Ver vídeo explicativo">🎬 Vídeo</button>
+          <button id="voice-mute-btn" class="header-tool-btn voice-mute-btn" title="Silenciar o activar voz" aria-label="Silenciar voz">🔊</button>
+
+          <!-- Menú Compacto y Expandible de Herramientas -->
+          <div class="header-tools-drawer" id="header-tools-drawer">
+            <button id="tools-drawer-toggle" class="header-tool-btn tools-drawer-toggle" type="button" title="Opciones y ajustes" aria-label="Abrir menú de herramientas" aria-expanded="false">
+              ⚙️ <span class="tools-toggle-arrow">▾</span>
+            </button>
+            <div class="tools-drawer-popover" id="tools-drawer-popover">
+              <div class="drawer-section-title">Herramientas y Ajustes</div>
+              <div class="tools-drawer-row">
+                <button id="zoom-toggle-btn" class="drawer-tool-btn" title="Aumentar tamaño de letra para baja visión" aria-label="Cambiar tamaño de texto">🔍 Aa Zoom</button>
+                <button id="map-btn" class="drawer-tool-btn" title="Ver el Mapa de Mundos y Niveles" aria-label="Abrir mapa de mundos">🗺️ Mapa</button>
+              </div>
+              <div class="tools-drawer-voice" id="voice-header-bar">
+                <label for="voice-select" class="drawer-voice-label">🗣️ Voz de Roby:</label>
+                <div class="voice-select-row">
+                  <select id="voice-select" class="header-voice-select" title="Seleccionar voz de Roby" aria-label="Seleccionar voz de la mascota"></select>
+                  <button id="voice-test-btn" class="drawer-tool-btn voice-test-btn" title="Probar voz de Roby" aria-label="Probar voz">Probar</button>
+                </div>
+              </div>
+              <div class="tools-drawer-footer">
+                <button id="settings-btn" class="drawer-tool-btn settings-full-btn" title="Opciones completas y accesibilidad" aria-label="Abrir opciones">⚙️ Más Opciones (Accesibilidad)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Barra interactiva de sub-lecciones y modo examen -->
+      <nav class="sublessons-nav cockpit-sublessons" id="sublessons-nav" aria-label="Navegador de sub-lecciones">
+        <div class="sublessons-nav-header">
+          <span class="sublessons-nav-title" id="sublessons-nav-title">📚 Lecciones de Nivel 1</span>
+          <span class="sublessons-nav-status" id="sublessons-nav-status">Progreso: 0/15</span>
+        </div>
+        <div class="sublessons-chips-container" id="sublessons-chips-container" role="tablist">
+          <!-- Chips 1.1 ... 1.15 y Examen generados dinámicamente -->
+        </div>
+      </nav>
+
+      <!-- 🤖 Fila de la Mascota Posada: Roby asomándose directamente sobre el chasis sin caja contenedora -->
+      <div class="mascot-stage mascot-perched-bridge" id="mascot-stage" aria-label="Profesor Roby">
+        <div class="mascot-avatar-wrapper mascot-perched-avatar" id="mascot-avatar-wrapper" title="¡Haz clic en Roby para hablar o jugar!">
+            <div class="hologram-portal-frame mascot-perched-frame" id="hologram-portal-frame">
+              <canvas id="mascot-canvas" class="mascot-canvas mascot-perched-canvas" width="280" height="280"></canvas>
+              <div id="mascot-avatar" class="mascot-avatar mascot-vector-avatar mascot-idle">
+              <svg id="mascot-avatar-svg" class="mascot-svg-avatar" viewBox="0 0 240 240" aria-label="Roby el Robot" role="img">
+                <defs>
+                  <radialGradient id="roby-head-grad" cx="40%" cy="35%" r="65%">
+                    <stop offset="0%" stop-color="#ffe4e9" />
+                    <stop offset="60%" stop-color="#ffb8c6" />
+                    <stop offset="100%" stop-color="#f492a5" />
+                  </radialGradient>
+                  <radialGradient id="roby-mint-grad" cx="40%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#c8f7e4" />
+                    <stop offset="70%" stop-color="#a8e6cf" />
+                    <stop offset="100%" stop-color="#7dd3b6" />
+                  </radialGradient>
+                  <linearGradient id="roby-screen-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#1e293b" />
+                    <stop offset="100%" stop-color="#0f172a" />
+                  </linearGradient>
+                  <linearGradient id="wing-grad-left" x1="100%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(168, 230, 207, 0.75)" />
+                    <stop offset="100%" stop-color="rgba(255, 184, 198, 0.35)" />
+                  </linearGradient>
+                  <linearGradient id="wing-grad-right" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(168, 230, 207, 0.75)" />
+                    <stop offset="100%" stop-color="rgba(255, 184, 198, 0.35)" />
+                  </linearGradient>
+                  <filter id="eye-glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                  <filter id="star-glow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                </defs>
+                <g id="roby-root" class="roby-root-group" transform-origin="120 200">
+                  <g id="roby-wings" class="roby-wings">
+                    <path id="roby-wing-left" class="roby-wing" d="M 68,140 C 20,130 5,85 25,60 C 50,30 85,90 78,135 Z" fill="url(#wing-grad-left)" stroke="#81e6d9" stroke-width="1.8" opacity="0.85" />
+                    <path id="roby-wing-right" class="roby-wing" d="M 172,140 C 220,130 235,85 215,60 C 190,30 155,90 162,135 Z" fill="url(#wing-grad-right)" stroke="#81e6d9" stroke-width="1.8" opacity="0.85" />
+                  </g>
+                  <g id="roby-antennae" class="roby-antennae">
+                    <path id="roby-antenna-left" d="M 88,68 Q 72,40 68,26" fill="none" stroke="#a8e6cf" stroke-width="4.5" stroke-linecap="round" />
+                    <polygon id="roby-star-left" points="68,12 72,22 83,23 74,30 77,41 68,34 59,41 62,30 53,23 64,22" fill="#ffd32a" filter="url(#star-glow)" />
+                    <path id="roby-antenna-right" d="M 152,68 Q 168,40 172,26" fill="none" stroke="#a8e6cf" stroke-width="4.5" stroke-linecap="round" />
+                    <polygon id="roby-star-right" points="172,12 176,22 187,23 178,30 181,41 172,34 163,41 166,30 157,23 168,22" fill="#ffd32a" filter="url(#star-glow)" />
+                  </g>
+                  <g id="roby-body">
+                    <circle cx="120" cy="130" r="76" fill="url(#roby-head-grad)" stroke="#f472b6" stroke-width="3" />
+                    <path d="M 70,82 C 70,68 170,68 170,82 C 170,92 155,94 120,94 C 85,94 70,92 70,82 Z" fill="url(#roby-mint-grad)" stroke="#38a169" stroke-width="2.5" />
+                    <ellipse cx="95" cy="80" rx="18" ry="8" fill="rgba(255, 255, 255, 0.45)" />
+                    <ellipse cx="145" cy="80" rx="18" ry="8" fill="rgba(255, 255, 255, 0.45)" />
+                    <rect x="62" y="96" width="116" height="84" rx="28" ry="28" fill="url(#roby-screen-grad)" stroke="#475569" stroke-width="2.5" />
+                    <path d="M 72,106 Q 120,98 168,106 Q 120,114 72,106 Z" fill="rgba(255, 255, 255, 0.12)" />
+                  </g>
+                  <g id="roby-eyes" class="roby-eyes-group">
+                    <g id="roby-eye-left" class="roby-eye" transform-origin="94 130">
+                      <circle id="roby-eye-left-base" cx="94" cy="130" r="14" fill="#00f2fe" filter="url(#eye-glow)" />
+                      <circle id="roby-pupil-left" cx="94" cy="130" r="8" fill="#0f172a" />
+                      <circle cx="91" cy="126" r="3" fill="#ffffff" />
+                      <polygon id="roby-star-eye-left" points="94,116 97,125 106,126 99,132 101,141 94,136 87,141 89,132 82,126 91,125" fill="#ffd32a" filter="url(#star-glow)" style="display: none;" />
+                    </g>
+                    <g id="roby-eye-right" class="roby-eye" transform-origin="146 130">
+                      <circle id="roby-eye-right-base" cx="146" cy="130" r="14" fill="#00f2fe" filter="url(#eye-glow)" />
+                      <circle id="roby-pupil-right" cx="146" cy="130" r="8" fill="#0f172a" />
+                      <circle cx="143" cy="126" r="3" fill="#ffffff" />
+                      <polygon id="roby-star-eye-right" points="146,116 149,125 158,126 151,132 153,141 146,136 139,141 141,132 134,126 143,125" fill="#ffd32a" filter="url(#star-glow)" style="display: none;" />
+                    </g>
+                    <ellipse id="roby-blush-left" cx="76" cy="152" rx="7" ry="4" fill="#ff7675" opacity="0.65" />
+                    <ellipse id="roby-blush-right" cx="164" cy="152" rx="7" ry="4" fill="#ff7675" opacity="0.65" />
+                  </g>
+                  <g id="roby-mouth-container">
+                    <path id="roby-mouth" class="roby-mouth-path" d="M 104,158 Q 120,166 136,158" fill="none" stroke="#22d3ee" stroke-width="4.5" stroke-linecap="round" />
+                    <ellipse id="roby-mouth-fill" cx="120" cy="162" rx="0" ry="0" fill="#e11d48" opacity="0" />
+                  </g>
+                </g>
+              </svg>
+            </div>
+              <div class="hologram-energy-ring"></div>
+            </div>
+            <div class="mascot-meta-row">
+              <div class="mascot-badge badge-happy" id="mascot-badge">Roby 🤖</div>
+              <div class="mascot-belt-tag" id="mascot-belt-tag">🥋 Cinturón Blanco</div>
+            </div>
+          </div>
+          <div class="mascot-speech-container mascot-perched-speech">
+            <div class="mascot-bubble" id="mascot-bubble">
+              <span id="mascot-speech-text">¡Hola! Soy Roby. ¡Pulsa la tecla iluminada para empezar!</span>
+              <div class="mascot-bubble-actions">
+                <span class="voice-wave-indicator" id="voice-wave-indicator" title="Roby hablando" aria-hidden="true">
+                  <span></span><span></span><span></span>
+                </span>
+                <button id="mascot-speak-btn" class="mascot-audio-btn" title="Escuchar a Roby" aria-label="Escuchar explicación de Roby">🔊</button>
+              </div>
+            </div>
+            <div class="mascot-tip-bar" id="mascot-tip-bar" role="button" tabindex="0" title="Haz clic para ver otro consejo de Roby">
+              <span class="tip-icon" id="tip-icon">💡</span>
+              <span id="mascot-lesson-tip" class="tip-text">Coloca tus dedos índices en la F y la J. ¡Tienen marquitas para descansar las manos ahí!</span>
+              <button class="tip-next-btn" id="tip-next-btn" title="Ver otro consejo" aria-label="Ver otro consejo">🔄</button>
+            </div>
+          </div>
+        </div>
+
+      <!-- 🎮 CONSOLA UNIFICADA (ZERO-DIV-LOOK): Pantalla OLED superior + Teclado físico continuo en un único chasis -->
+      <section class="cockpit-unified-chassis" id="cockpit-unified-chassis" aria-label="Consola de mecanografía unificada">
+        <!-- 📝 Pantalla OLED integrada superior (visor de texto) -->
+        <div class="play-area cockpit-oled-slot" id="play-area" aria-label="Pantalla OLED de lectura de texto">
+          <div class="word-panel hud-screen-recess" id="word-panel">
+            <div class="hud-screen-glare"></div>
+            <div id="target-word" class="target-word unified-text holographic-text"></div>
+          </div>
+        </div>
+
+        <!-- ⌨️ Bandeja inferior integrada con teclado keycap 3D y manos guía vectoriales -->
+        <div class="finger-guide-bar cockpit-lower-deck" id="finger-guide-bar" aria-label="Guía interactiva de manitas y teclado">
+        <div class="hand-card cockpit-hand-dock" id="hand-card-left">
+          <div class="hand-card-title">Mano Izquierda</div>
+          <div class="hand-illustration">
+            <svg class="interactive-hand-svg natural-hand-dorsal" id="hand-svg-left" viewBox="0 0 400 480" width="100%" height="100%" aria-label="Mano Izquierda Guía" role="img" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Sombra profunda realista del contorno de la mano -->
+    <filter id="hand-glow-drop-l" x="-25%" y="-20%" width="150%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#050711" flood-opacity="0.55" />
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#050711" flood-opacity="0.35" />
+    </filter>
+
+    <!-- Gradiente de piel natural realista (dorso) -->
+    <linearGradient id="skin-real-l" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#FFEADE" />
+      <stop offset="35%" stop-color="#F9CEAD" />
+      <stop offset="75%" stop-color="#EDB388" />
+      <stop offset="100%" stop-color="#DE9D6E" />
+    </linearGradient>
+
+    <!-- Gradiente de uña pulida con cutícula y brillo -->
+    <linearGradient id="nail-real-l" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+      <stop offset="25%" stop-color="#FFF2F5" />
+      <stop offset="65%" stop-color="#FCDCE5" />
+      <stop offset="100%" stop-color="#F7BFCE" />
+    </linearGradient>
+
+    <!-- Gradientes de iluminación por dedo con desvanecimiento suave en el nudillo -->
+    <linearGradient id="glow-grad-l-pinky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F538A0" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#F538A0" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#F538A0" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-l-ring" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FA903E" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#FA903E" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#FA903E" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-l-middle" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FCC934" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#FCC934" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#FCC934" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-l-index" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#81C995" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#81C995" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#81C995" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-l-thumb" x1="50%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A73E8" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#1A73E8" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#1A73E8" stop-opacity="0.0" />
+    </linearGradient>
+  </defs>
+
+  <g class="hand-scene" filter="url(#hand-glow-drop-l)" >
+
+    <!-- ===================================================================
+         1. SILUETA BASE COMPLETA Y CONTINUA DE LA MANO (100% Anatómica)
+         =================================================================== -->
+    <path class="hand-base-silhouette" d="M 92.6,449.6 L 83.2,426.7 L 75.9,398.6 L 64.5,334.2 L 59.8,284.8 L 48.4,236.4 L 41.1,189.6 L 40,164.6 L 41.6,148 L 43.7,142.3 L 46.8,139.2 L 52,137.6 L 60.8,139.2 L 68.6,147.5 L 74.4,163.1 L 80.6,203.1 L 96.7,259.8 L 100.4,267.1 L 104,267.6 L 105.6,266 L 106.6,263.4 L 106.6,239 L 100.4,187.5 L 100.9,98.6 L 102.4,77.8 L 106.1,69 L 110.8,63.2 L 120.1,59.1 L 129.5,61.2 L 135.2,66.4 L 139.9,76.2 L 144.6,160.5 L 150.3,203.6 L 151.8,227 L 153.4,231.7 L 156,234.3 L 159.1,230.7 L 160.2,219.8 L 160.7,149.6 L 166.4,109.5 L 168,61.7 L 169.5,48.2 L 173.7,37.8 L 181.5,30 L 185.6,28.9 L 191.4,30 L 199.2,33.6 L 203.8,37.8 L 209.6,50.8 L 211.1,77.3 L 210.1,134 L 211.6,150.1 L 210.1,173 L 210.1,227 L 213.2,232.8 L 220,232.2 L 223.1,229.1 L 224.6,224.4 L 230.4,182.3 L 240.2,135 L 243.4,97 L 248,76.8 L 252.7,68.4 L 259,62.7 L 263.6,60.6 L 268.3,60.6 L 273,62.7 L 279.2,70 L 284.4,83 L 285.5,119.4 L 282.9,139.7 L 281.3,180.8 L 273,244.2 L 273,284.2 L 277.2,314.9 L 280.8,324.3 L 285,320.6 L 294.8,299.3 L 301.6,283.2 L 303.7,271.8 L 308.9,257.7 L 316.2,244.2 L 324.5,232.8 L 333.8,223.4 L 343.7,218.7 L 356.2,219.2 L 361.9,221.8 L 364,226 L 363,235.4 L 354.1,261.9 L 351,293.1 L 332.3,340.4 L 325,374.7 L 302.1,417.9 L 286.5,444.9 L 281.3,451.2 L 93.6,451.2 L 92.6,450.1 Z"
+          fill="url(#skin-real-l)"
+          stroke="#C57E4E"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+    />
+
+    <!-- Sombra suave volumétrica del borde cubital (meñique) y muñeca -->
+    <path d="M 92.6,449.6 C 80,410 70,350 62,290" fill="none" stroke="#B06536" stroke-width="3" stroke-linecap="round" opacity="0.25" />
+    <path d="M 281.3,451.2 C 295,430 315,390 326,360" fill="none" stroke="#B06536" stroke-width="3" stroke-linecap="round" opacity="0.2" />
+
+    <!-- Arcos suaves y naturales de los nudillos principales (MCP) -->
+    <path d="M 66,268 Q 84,262 102,267" fill="none" stroke="#C57E4E" stroke-width="1.6" stroke-linecap="round" opacity="0.45" />
+    <path d="M 112,240 Q 134,233 154,237" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+    <path d="M 166,235 Q 188,229 210,234" fill="none" stroke="#C57E4E" stroke-width="1.8" stroke-linecap="round" opacity="0.45" />
+    <path d="M 220,237 Q 244,244 268,256" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+    <path d="M 115,442 C 160,452 220,452 265,442" fill="none" stroke="#C57E4E" stroke-width="1.8" stroke-linecap="round" opacity="0.3" />
+
+    <!-- ===================================================================
+         2. DEDOS INTERACTIVOS (Capas anatómicas de alta precisión)
+         =================================================================== -->
+
+    <!-- DEDO MEÑIQUE (Pinky) -->
+    <g class="interactive-finger finger-unit" id="finger-l-pinky" data-finger="lp" data-finger-id="finger-l-pinky" style="--default-color: #F538A0; --glow-gradient: url(#glow-grad-l-pinky);">
+      <path class="finger-body" d="
+        M 56,275
+        L 48.4,236.4 L 41.1,189.6 L 40,164.6 L 41.6,148 L 43.7,142.3 L 46.8,139.2 L 52,137.6 L 60.8,139.2 L 68.6,147.5 L 74.4,163.1 L 80.6,203.1 L 96.7,259.8 L 100.4,267.1
+        Q 78,272 56,275 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 56,275
+        L 48.4,236.4 L 41.1,189.6 L 40,164.6 L 41.6,148 L 43.7,142.3 L 46.8,139.2 L 52,137.6 L 60.8,139.2 L 68.6,147.5 L 74.4,163.1 L 80.6,203.1 L 96.7,259.8 L 100.4,267.1"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 45,202 Q 62,206 78,202" fill="none" stroke="#C57E4E" stroke-width="1.4" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 43,168 Q 58,172 71,168" fill="none" stroke="#C57E4E" stroke-width="1.3" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 45,156
+        C 43,146 47,138 56,137
+        C 65,138 69,146 67,156
+        C 66,163 46,163 45,156 Z"
+        fill="url(#nail-real-l)"
+        stroke="#E69CAE"
+        stroke-width="0.9"
+      />
+      <path class="nail-shine" d="M 47,144 Q 56,140 64,144" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="56" cy="148" r="12" />
+      <circle class="finger-pulse-ring" cx="56" cy="148" r="14" />
+    </g>
+
+    <!-- DEDO ANULAR (Ring) -->
+    <g class="interactive-finger finger-unit" id="finger-l-ring" data-finger="lr" data-finger-id="finger-l-ring" style="--default-color: #FA903E; --glow-gradient: url(#glow-grad-l-ring);">
+      <path class="finger-body" d="
+        M 104,267.6
+        L 106.6,263.4 L 106.6,239 L 100.4,187.5 L 100.9,98.6 L 102.4,77.8 L 106.1,69 L 110.8,63.2 L 120.1,59.1 L 129.5,61.2 L 135.2,66.4 L 139.9,76.2 L 144.6,160.5 L 150.3,203.6 L 151.8,227 L 156,234.3
+        Q 130,248 104,267.6 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 104,267.6
+        L 106.6,263.4 L 106.6,239 L 100.4,187.5 L 100.9,98.6 L 102.4,77.8 L 106.1,69 L 110.8,63.2 L 120.1,59.1 L 129.5,61.2 L 135.2,66.4 L 139.9,76.2 L 144.6,160.5 L 150.3,203.6 L 151.8,227 L 156,234.3"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 104,162 Q 124,167 146,162" fill="none" stroke="#C57E4E" stroke-width="1.6" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 104,115 Q 123,119 142,115" fill="none" stroke="#C57E4E" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 108,82
+        C 106,70 110,60 122,59
+        C 133,60 137,70 135,82
+        C 134,90 109,90 108,82 Z"
+        fill="url(#nail-real-l)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 111,68 Q 122,63 131,68" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="122" cy="72" r="14" />
+      <circle class="finger-pulse-ring" cx="122" cy="72" r="16" />
+    </g>
+
+    <!-- DEDO CORAZÓN (Middle) -->
+    <g class="interactive-finger finger-unit" id="finger-l-middle" data-finger="lm" data-finger-id="finger-l-middle" style="--default-color: #FCC934; --glow-gradient: url(#glow-grad-l-middle);">
+      <path class="finger-body" d="
+        M 156,234.3
+        L 159.1,230.7 L 160.2,219.8 L 160.7,149.6 L 166.4,109.5 L 168,61.7 L 169.5,48.2 L 173.7,37.8 L 181.5,30 L 185.6,28.9 L 191.4,30 L 199.2,33.6 L 203.8,37.8 L 209.6,50.8 L 211.1,77.3 L 210.1,134 L 211.6,150.1 L 210.1,173 L 210.1,227 L 213.2,232.8
+        Q 185,236 156,234.3 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 156,234.3
+        L 159.1,230.7 L 160.2,219.8 L 160.7,149.6 L 166.4,109.5 L 168,61.7 L 169.5,48.2 L 173.7,37.8 L 181.5,30 L 185.6,28.9 L 191.4,30 L 199.2,33.6 L 203.8,37.8 L 209.6,50.8 L 211.1,77.3 L 210.1,134 L 211.6,150.1 L 210.1,173 L 210.1,227 L 213.2,232.8"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 166,140 Q 188,145 210,140" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 168,84 Q 188,88 208,84" fill="none" stroke="#C57E4E" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 172,52
+        C 170,38 175,28 188,27
+        C 201,28 206,38 204,52
+        C 203,62 173,62 172,52 Z"
+        fill="url(#nail-real-l)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 176,36 Q 188,30 198,36" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="188" cy="42" r="15" />
+      <circle class="finger-pulse-ring" cx="188" cy="42" r="17" />
+    </g>
+
+    <!-- DEDO ÍNDICE (Index) -->
+    <g class="interactive-finger finger-unit" id="finger-l-index" data-finger="li" data-finger-id="finger-l-index" style="--default-color: #81C995; --glow-gradient: url(#glow-grad-l-index);">
+      <path class="finger-body" d="
+        M 213.2,232.8
+        L 220,232.2 L 223.1,229.1 L 224.6,224.4 L 230.4,182.3 L 240.2,135 L 243.4,97 L 248,76.8 L 252.7,68.4 L 259,62.7 L 263.6,60.6 L 268.3,60.6 L 273,62.7 L 279.2,70 L 284.4,83 L 285.5,119.4 L 282.9,139.7 L 281.3,180.8 L 273,244.2
+        Q 243,237 213.2,232.8 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 213.2,232.8
+        L 220,232.2 L 223.1,229.1 L 224.6,224.4 L 230.4,182.3 L 240.2,135 L 243.4,97 L 248,76.8 L 252.7,68.4 L 259,62.7 L 263.6,60.6 L 268.3,60.6 L 273,62.7 L 279.2,70 L 284.4,83 L 285.5,119.4 L 282.9,139.7 L 281.3,180.8 L 273,244.2"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 234,152 Q 256,157 278,152" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 242,102 Q 260,106 278,102" fill="none" stroke="#C57E4E" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 250,84
+        C 248,71 253,61 266,60
+        C 278,61 282,71 280,84
+        C 279,93 251,93 250,84 Z"
+        fill="url(#nail-real-l)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 254,70 Q 266,65 275,70" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="266" cy="74" r="14" />
+      <circle class="finger-pulse-ring" cx="266" cy="74" r="16" />
+    </g>
+
+    <!-- DEDO PULGAR (Thumb) -->
+    <g class="interactive-finger finger-unit" id="finger-l-thumb" data-finger="thumb" data-finger-id="finger-l-thumb" style="--default-color: #1A73E8; --glow-gradient: url(#glow-grad-l-thumb);">
+      <path class="finger-body" d="
+        M 280.8,324.3
+        L 285,320.6 L 294.8,299.3 L 301.6,283.2 L 303.7,271.8 L 308.9,257.7 L 316.2,244.2 L 324.5,232.8 L 333.8,223.4 L 343.7,218.7 L 356.2,219.2 L 361.9,221.8 L 364,226 L 363,235.4 L 354.1,261.9 L 351,293.1 L 332.3,340.4
+        Q 306,332 280.8,324.3 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 280.8,324.3
+        L 285,320.6 L 294.8,299.3 L 301.6,283.2 L 303.7,271.8 L 308.9,257.7 L 316.2,244.2 L 324.5,232.8 L 333.8,223.4 L 343.7,218.7 L 356.2,219.2 L 361.9,221.8 L 364,226 L 363,235.4 L 354.1,261.9 L 351,293.1 L 332.3,340.4"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 318,265 Q 334,275 352,260" fill="none" stroke="#C57E4E" stroke-width="1.6" stroke-linecap="round" opacity="0.45" />
+
+      <path class="finger-nail" d="
+        M 342,238
+        C 344,226 353,222 362,231
+        C 368,241 364,251 354,255
+        C 348,258 340,249 342,238 Z"
+        fill="url(#nail-real-l)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 348,230 Q 355,228 361,234" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="354" cy="238" r="14" />
+      <circle class="finger-pulse-ring" cx="354" cy="238" r="16" />
+    </g>
+
+  </g>
+</svg>
+          </div>
+        </div>
+
+        <!-- Columna Central: Indicador de dedo + Teclado en pantalla -->
+        <div class="keyboard-center-wrapper cockpit-keyboard-tray">
+          <!-- Indicador Central Dinámico para 6 años -->
+        <div class="current-finger-hint" id="current-finger-hint">
+          <div class="hint-direction-banner" id="hint-direction-banner">
+            <span class="hint-arrow" id="hint-arrow-left">👈</span>
+            <span id="hint-hand-name" class="hint-hand-name">Mano Izquierda</span>
+            <span class="hint-arrow" id="hint-arrow-right">👉</span>
+          </div>
+          <div class="hint-action-row">
+            <span id="hint-finger-badge" class="hint-badge dot-li">¡Usa el dedo que brilla!</span>
+          </div>
+          <div class="hint-visual-helper" id="hint-visual-helper">
+            ⭐ Mira la manita iluminada
+          </div>
+        </div>
+
+          <!-- Teclado en pantalla -->
+          <div class="keyboard" id="keyboard" aria-label="Teclado en pantalla">
+<div class="keyboard-row">
+          <div class="key" data-key="1" data-finger="lp" aria-label="1, exclamación y barra vertical">
+            <div class="key-label">
+              <span class="key-label-primary">1</span>
+              <span class="key-label-secondary">!</span>
+              <span class="key-label-tertiary">|</span>
+            </div>
+          </div>
+          <div class="key" data-key="2" data-finger="lr" aria-label="2, comillas y arroba">
+            <div class="key-label">
+              <span class="key-label-primary">2</span>
+              <span class="key-label-secondary">"</span>
+              <span class="key-label-tertiary">@</span>
+            </div>
+          </div>
+          <div class="key" data-key="3" data-finger="lm" aria-label="3, punto medio y almohadilla">
+            <div class="key-label">
+              <span class="key-label-primary">3</span>
+              <span class="key-label-secondary">·</span>
+              <span class="key-label-tertiary">#</span>
+            </div>
+          </div>
+          <div class="key" data-key="4" data-finger="li" aria-label="4, dólar y virgulilla">
+            <div class="key-label">
+              <span class="key-label-primary">4</span>
+              <span class="key-label-secondary">$</span>
+              <span class="key-label-tertiary">~</span>
+            </div>
+          </div>
+          <div class="key" data-key="5" data-finger="li" aria-label="5 y porcentaje">
+            <div class="key-label">
+              <span class="key-label-primary">5</span>
+              <span class="key-label-secondary">%</span>
+            </div>
+          </div>
+          <div class="key" data-key="6" data-finger="ri" aria-label="6 y ampersand">
+            <div class="key-label">
+              <span class="key-label-primary">6</span>
+              <span class="key-label-secondary">&amp;</span>
+            </div>
+          </div>
+          <div class="key" data-key="7" data-finger="ri" aria-label="7 y barra">
+            <div class="key-label">
+              <span class="key-label-primary">7</span>
+              <span class="key-label-secondary">/</span>
+            </div>
+          </div>
+          <div class="key" data-key="8" data-finger="rm" aria-label="8 y paréntesis abierto">
+            <div class="key-label">
+              <span class="key-label-primary">8</span>
+              <span class="key-label-secondary">(</span>
+            </div>
+          </div>
+          <div class="key" data-key="9" data-finger="rr" aria-label="9 y paréntesis cerrado">
+            <div class="key-label">
+              <span class="key-label-primary">9</span>
+              <span class="key-label-secondary">)</span>
+            </div>
+          </div>
+          <div class="key" data-key="0" data-finger="rp" aria-label="0 y igual">
+            <div class="key-label">
+              <span class="key-label-primary">0</span>
+              <span class="key-label-secondary">=</span>
+            </div>
+          </div>
+          <div class="key" data-key="¿" data-finger="rp">¿</div>
+          <div class="key" data-key="?" data-finger="rp">?</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key" data-key="q" data-finger="lp">Q</div>
+          <div class="key" data-key="w" data-finger="lr">W</div>
+          <div class="key" data-key="e" data-finger="lm" aria-label="E y euro">
+            <div class="key-label">
+              <span class="key-label-primary">E</span>
+              <span class="key-label-tertiary">€</span>
+            </div>
+          </div>
+          <div class="key" data-key="r" data-finger="li">R</div>
+          <div class="key" data-key="t" data-finger="li">T</div>
+          <div class="key" data-key="y" data-finger="ri">Y</div>
+          <div class="key" data-key="u" data-finger="ri">U</div>
+          <div class="key" data-key="i" data-finger="rm">I</div>
+          <div class="key" data-key="o" data-finger="rr">O</div>
+          <div class="key" data-key="p" data-finger="rp">P</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key" data-key="a" data-finger="lp">A</div>
+          <div class="key" data-key="s" data-finger="lr">S</div>
+          <div class="key" data-key="d" data-finger="lm">D</div>
+          <div class="key key-homemark" data-key="f" data-finger="li">F</div>
+          <div class="key" data-key="g" data-finger="li">G</div>
+          <div class="key" data-key="h" data-finger="ri">H</div>
+          <div class="key key-homemark" data-key="j" data-finger="ri">J</div>
+          <div class="key" data-key="k" data-finger="rm">K</div>
+          <div class="key" data-key="l" data-finger="rr">L</div>
+          <div class="key" data-key="ñ" data-finger="rp">Ñ</div>
+          <div class="key key-accent" data-key="´" data-finger="rp" aria-label="acento, diéresis y llave abierta">
+            <div class="key-label">
+              <span class="key-label-primary">´</span>
+              <span class="key-label-secondary">¨</span>
+              <span class="key-label-tertiary">{</span>
+            </div>
+          </div>
+          <div class="key" data-key="ç" data-finger="rp" aria-label="ce cedilla">
+            <div class="key-label">
+              <span class="key-label-primary">Ç</span>
+              <span class="key-label-secondary">}</span>
+            </div>
+          </div>
+          <div class="key key-enter" data-key="Enter" data-finger="rp" aria-label="Intro">Intro</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key key-shift" data-key="Shift" data-finger="lp" aria-label="Mayúscula izquierda">Mayús</div>
+          <div class="key" data-key="z" data-finger="lp">Z</div>
+          <div class="key" data-key="x" data-finger="lr">X</div>
+          <div class="key" data-key="c" data-finger="lm">C</div>
+          <div class="key" data-key="v" data-finger="li">V</div>
+          <div class="key" data-key="b" data-finger="li">B</div>
+          <div class="key" data-key="n" data-finger="ri">N</div>
+          <div class="key" data-key="m" data-finger="ri">M</div>
+          <div class="key" data-key="," data-finger="rm" aria-label=", punto y coma">
+            <div class="key-label">
+              <span class="key-label-primary">,</span>
+              <span class="key-label-secondary">;</span>
+            </div>
+          </div>
+          <div class="key" data-key="." data-finger="rr" aria-label="punto y dos puntos">
+            <div class="key-label">
+              <span class="key-label-primary">.</span>
+              <span class="key-label-secondary">:</span>
+            </div>
+          </div>
+          <div class="key" data-key="-" data-finger="rp">- _</div>
+          <div class="key key-shift" data-key="Shift" data-finger="rp" aria-label="Mayúscula derecha">Mayús</div>
+        </div>
+        <div class="keyboard-row">
+          <div class="key key-ctrl" data-key="Control" data-finger="lp" aria-label="Control izquierdo">Ctrl</div>
+          <div class="key key-alt" data-key="Alt" data-finger="thumb-l" aria-label="Alt izquierdo">Alt</div>
+          <div class="key key-spacebar" data-key=" " data-finger="thumb" aria-label="Espacio">Espacio</div>
+          <div class="key key-altgr" data-key="AltGraph" data-finger="thumb-r" aria-label="Alt Gr">Alt Gr</div>
+          <div class="key key-ctrl" data-key="Control" data-finger="rp" aria-label="Control derecho">Ctrl</div>
+        </div>
+          </div>
+        </div>
+
+        <!-- Mano Derecha con 5 dedos -->
+        <div class="hand-card cockpit-hand-dock" id="hand-card-right">
+          <div class="hand-card-title">Mano Derecha</div>
+          <div class="hand-illustration">
+            <svg class="interactive-hand-svg natural-hand-dorsal" id="hand-svg-right" viewBox="0 0 400 480" width="100%" height="100%" aria-label="Mano Derecha Guía" role="img" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Sombra profunda realista del contorno de la mano -->
+    <filter id="hand-glow-drop-r" x="-25%" y="-20%" width="150%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#050711" flood-opacity="0.55" />
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#050711" flood-opacity="0.35" />
+    </filter>
+
+    <!-- Gradiente de piel natural realista (dorso) -->
+    <linearGradient id="skin-real-r" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#FFEADE" />
+      <stop offset="35%" stop-color="#F9CEAD" />
+      <stop offset="75%" stop-color="#EDB388" />
+      <stop offset="100%" stop-color="#DE9D6E" />
+    </linearGradient>
+
+    <!-- Gradiente de uña pulida con cutícula y brillo -->
+    <linearGradient id="nail-real-r" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+      <stop offset="25%" stop-color="#FFF2F5" />
+      <stop offset="65%" stop-color="#FCDCE5" />
+      <stop offset="100%" stop-color="#F7BFCE" />
+    </linearGradient>
+
+    <!-- Gradientes de iluminación por dedo con desvanecimiento suave en el nudillo -->
+    <linearGradient id="glow-grad-r-pinky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F538A0" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#F538A0" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#F538A0" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-r-ring" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FA903E" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#FA903E" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#FA903E" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-r-middle" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FCC934" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#FCC934" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#FCC934" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-r-index" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#12B5CB" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#12B5CB" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#12B5CB" stop-opacity="0.0" />
+    </linearGradient>
+
+    <linearGradient id="glow-grad-r-thumb" x1="50%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A73E8" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#1A73E8" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#1A73E8" stop-opacity="0.0" />
+    </linearGradient>
+  </defs>
+
+  <g class="hand-scene" filter="url(#hand-glow-drop-r)" transform="translate(400, 0) scale(-1, 1)">
+
+    <!-- ===================================================================
+         1. SILUETA BASE COMPLETA Y CONTINUA DE LA MANO (100% Anatómica)
+         =================================================================== -->
+    <path class="hand-base-silhouette" d="M 92.6,449.6 L 83.2,426.7 L 75.9,398.6 L 64.5,334.2 L 59.8,284.8 L 48.4,236.4 L 41.1,189.6 L 40,164.6 L 41.6,148 L 43.7,142.3 L 46.8,139.2 L 52,137.6 L 60.8,139.2 L 68.6,147.5 L 74.4,163.1 L 80.6,203.1 L 96.7,259.8 L 100.4,267.1 L 104,267.6 L 105.6,266 L 106.6,263.4 L 106.6,239 L 100.4,187.5 L 100.9,98.6 L 102.4,77.8 L 106.1,69 L 110.8,63.2 L 120.1,59.1 L 129.5,61.2 L 135.2,66.4 L 139.9,76.2 L 144.6,160.5 L 150.3,203.6 L 151.8,227 L 153.4,231.7 L 156,234.3 L 159.1,230.7 L 160.2,219.8 L 160.7,149.6 L 166.4,109.5 L 168,61.7 L 169.5,48.2 L 173.7,37.8 L 181.5,30 L 185.6,28.9 L 191.4,30 L 199.2,33.6 L 203.8,37.8 L 209.6,50.8 L 211.1,77.3 L 210.1,134 L 211.6,150.1 L 210.1,173 L 210.1,227 L 213.2,232.8 L 220,232.2 L 223.1,229.1 L 224.6,224.4 L 230.4,182.3 L 240.2,135 L 243.4,97 L 248,76.8 L 252.7,68.4 L 259,62.7 L 263.6,60.6 L 268.3,60.6 L 273,62.7 L 279.2,70 L 284.4,83 L 285.5,119.4 L 282.9,139.7 L 281.3,180.8 L 273,244.2 L 273,284.2 L 277.2,314.9 L 280.8,324.3 L 285,320.6 L 294.8,299.3 L 301.6,283.2 L 303.7,271.8 L 308.9,257.7 L 316.2,244.2 L 324.5,232.8 L 333.8,223.4 L 343.7,218.7 L 356.2,219.2 L 361.9,221.8 L 364,226 L 363,235.4 L 354.1,261.9 L 351,293.1 L 332.3,340.4 L 325,374.7 L 302.1,417.9 L 286.5,444.9 L 281.3,451.2 L 93.6,451.2 L 92.6,450.1 Z"
+          fill="url(#skin-real-r)"
+          stroke="#C57E4E"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+    />
+
+    <!-- Sombra suave volumétrica del borde cubital (meñique) y muñeca -->
+    <path d="M 92.6,449.6 C 80,410 70,350 62,290" fill="none" stroke="#B06536" stroke-width="3" stroke-linecap="round" opacity="0.25" />
+    <path d="M 281.3,451.2 C 295,430 315,390 326,360" fill="none" stroke="#B06536" stroke-width="3" stroke-linecap="round" opacity="0.2" />
+
+    <!-- Arcos suaves y naturales de los nudillos principales (MCP) -->
+    <path d="M 66,268 Q 84,262 102,267" fill="none" stroke="#C57E4E" stroke-width="1.6" stroke-linecap="round" opacity="0.45" />
+    <path d="M 112,240 Q 134,233 154,237" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+    <path d="M 166,235 Q 188,229 210,234" fill="none" stroke="#C57E4E" stroke-width="1.8" stroke-linecap="round" opacity="0.45" />
+    <path d="M 220,237 Q 244,244 268,256" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+    <path d="M 115,442 C 160,452 220,452 265,442" fill="none" stroke="#C57E4E" stroke-width="1.8" stroke-linecap="round" opacity="0.3" />
+
+    <!-- ===================================================================
+         2. DEDOS INTERACTIVOS (Capas anatómicas de alta precisión)
+         =================================================================== -->
+
+    <!-- DEDO MEÑIQUE (Pinky) -->
+    <g class="interactive-finger finger-unit" id="finger-r-pinky" data-finger="rp" data-finger-id="finger-r-pinky" style="--default-color: #F538A0; --glow-gradient: url(#glow-grad-r-pinky);">
+      <path class="finger-body" d="
+        M 56,275
+        L 48.4,236.4 L 41.1,189.6 L 40,164.6 L 41.6,148 L 43.7,142.3 L 46.8,139.2 L 52,137.6 L 60.8,139.2 L 68.6,147.5 L 74.4,163.1 L 80.6,203.1 L 96.7,259.8 L 100.4,267.1
+        Q 78,272 56,275 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 56,275
+        L 48.4,236.4 L 41.1,189.6 L 40,164.6 L 41.6,148 L 43.7,142.3 L 46.8,139.2 L 52,137.6 L 60.8,139.2 L 68.6,147.5 L 74.4,163.1 L 80.6,203.1 L 96.7,259.8 L 100.4,267.1"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 45,202 Q 62,206 78,202" fill="none" stroke="#C57E4E" stroke-width="1.4" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 43,168 Q 58,172 71,168" fill="none" stroke="#C57E4E" stroke-width="1.3" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 45,156
+        C 43,146 47,138 56,137
+        C 65,138 69,146 67,156
+        C 66,163 46,163 45,156 Z"
+        fill="url(#nail-real-r)"
+        stroke="#E69CAE"
+        stroke-width="0.9"
+      />
+      <path class="nail-shine" d="M 47,144 Q 56,140 64,144" fill="none" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="56" cy="148" r="12" />
+      <circle class="finger-pulse-ring" cx="56" cy="148" r="14" />
+    </g>
+
+    <!-- DEDO ANULAR (Ring) -->
+    <g class="interactive-finger finger-unit" id="finger-r-ring" data-finger="rr" data-finger-id="finger-r-ring" style="--default-color: #FA903E; --glow-gradient: url(#glow-grad-r-ring);">
+      <path class="finger-body" d="
+        M 104,267.6
+        L 106.6,263.4 L 106.6,239 L 100.4,187.5 L 100.9,98.6 L 102.4,77.8 L 106.1,69 L 110.8,63.2 L 120.1,59.1 L 129.5,61.2 L 135.2,66.4 L 139.9,76.2 L 144.6,160.5 L 150.3,203.6 L 151.8,227 L 156,234.3
+        Q 130,248 104,267.6 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 104,267.6
+        L 106.6,263.4 L 106.6,239 L 100.4,187.5 L 100.9,98.6 L 102.4,77.8 L 106.1,69 L 110.8,63.2 L 120.1,59.1 L 129.5,61.2 L 135.2,66.4 L 139.9,76.2 L 144.6,160.5 L 150.3,203.6 L 151.8,227 L 156,234.3"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 104,162 Q 124,167 146,162" fill="none" stroke="#C57E4E" stroke-width="1.6" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 104,115 Q 123,119 142,115" fill="none" stroke="#C57E4E" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 108,82
+        C 106,70 110,60 122,59
+        C 133,60 137,70 135,82
+        C 134,90 109,90 108,82 Z"
+        fill="url(#nail-real-r)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 111,68 Q 122,63 131,68" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="122" cy="72" r="14" />
+      <circle class="finger-pulse-ring" cx="122" cy="72" r="16" />
+    </g>
+
+    <!-- DEDO CORAZÓN (Middle) -->
+    <g class="interactive-finger finger-unit" id="finger-r-middle" data-finger="rm" data-finger-id="finger-r-middle" style="--default-color: #FCC934; --glow-gradient: url(#glow-grad-r-middle);">
+      <path class="finger-body" d="
+        M 156,234.3
+        L 159.1,230.7 L 160.2,219.8 L 160.7,149.6 L 166.4,109.5 L 168,61.7 L 169.5,48.2 L 173.7,37.8 L 181.5,30 L 185.6,28.9 L 191.4,30 L 199.2,33.6 L 203.8,37.8 L 209.6,50.8 L 211.1,77.3 L 210.1,134 L 211.6,150.1 L 210.1,173 L 210.1,227 L 213.2,232.8
+        Q 185,236 156,234.3 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 156,234.3
+        L 159.1,230.7 L 160.2,219.8 L 160.7,149.6 L 166.4,109.5 L 168,61.7 L 169.5,48.2 L 173.7,37.8 L 181.5,30 L 185.6,28.9 L 191.4,30 L 199.2,33.6 L 203.8,37.8 L 209.6,50.8 L 211.1,77.3 L 210.1,134 L 211.6,150.1 L 210.1,173 L 210.1,227 L 213.2,232.8"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 166,140 Q 188,145 210,140" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 168,84 Q 188,88 208,84" fill="none" stroke="#C57E4E" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 172,52
+        C 170,38 175,28 188,27
+        C 201,28 206,38 204,52
+        C 203,62 173,62 172,52 Z"
+        fill="url(#nail-real-r)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 176,36 Q 188,30 198,36" fill="none" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="188" cy="42" r="15" />
+      <circle class="finger-pulse-ring" cx="188" cy="42" r="17" />
+    </g>
+
+    <!-- DEDO ÍNDICE (Index) -->
+    <g class="interactive-finger finger-unit" id="finger-r-index" data-finger="ri" data-finger-id="finger-r-index" style="--default-color: #12B5CB; --glow-gradient: url(#glow-grad-r-index);">
+      <path class="finger-body" d="
+        M 213.2,232.8
+        L 220,232.2 L 223.1,229.1 L 224.6,224.4 L 230.4,182.3 L 240.2,135 L 243.4,97 L 248,76.8 L 252.7,68.4 L 259,62.7 L 263.6,60.6 L 268.3,60.6 L 273,62.7 L 279.2,70 L 284.4,83 L 285.5,119.4 L 282.9,139.7 L 281.3,180.8 L 273,244.2
+        Q 243,237 213.2,232.8 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 213.2,232.8
+        L 220,232.2 L 223.1,229.1 L 224.6,224.4 L 230.4,182.3 L 240.2,135 L 243.4,97 L 248,76.8 L 252.7,68.4 L 259,62.7 L 263.6,60.6 L 268.3,60.6 L 273,62.7 L 279.2,70 L 284.4,83 L 285.5,119.4 L 282.9,139.7 L 281.3,180.8 L 273,244.2"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 234,152 Q 256,157 278,152" fill="none" stroke="#C57E4E" stroke-width="1.7" stroke-linecap="round" opacity="0.45" />
+      <path class="finger-crease" d="M 242,102 Q 260,106 278,102" fill="none" stroke="#C57E4E" stroke-width="1.5" stroke-linecap="round" opacity="0.4" />
+
+      <path class="finger-nail" d="
+        M 250,84
+        C 248,71 253,61 266,60
+        C 278,61 282,71 280,84
+        C 279,93 251,93 250,84 Z"
+        fill="url(#nail-real-r)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 254,70 Q 266,65 275,70" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="266" cy="74" r="14" />
+      <circle class="finger-pulse-ring" cx="266" cy="74" r="16" />
+    </g>
+
+    <!-- DEDO PULGAR (Thumb) -->
+    <g class="interactive-finger finger-unit" id="finger-r-thumb" data-finger="thumb" data-finger-id="finger-r-thumb" style="--default-color: #1A73E8; --glow-gradient: url(#glow-grad-r-thumb);">
+      <path class="finger-body" d="
+        M 280.8,324.3
+        L 285,320.6 L 294.8,299.3 L 301.6,283.2 L 303.7,271.8 L 308.9,257.7 L 316.2,244.2 L 324.5,232.8 L 333.8,223.4 L 343.7,218.7 L 356.2,219.2 L 361.9,221.8 L 364,226 L 363,235.4 L 354.1,261.9 L 351,293.1 L 332.3,340.4
+        Q 306,332 280.8,324.3 Z"
+        fill="transparent"
+      />
+      <path class="finger-rim" d="
+        M 280.8,324.3
+        L 285,320.6 L 294.8,299.3 L 301.6,283.2 L 303.7,271.8 L 308.9,257.7 L 316.2,244.2 L 324.5,232.8 L 333.8,223.4 L 343.7,218.7 L 356.2,219.2 L 361.9,221.8 L 364,226 L 363,235.4 L 354.1,261.9 L 351,293.1 L 332.3,340.4"
+        fill="none" stroke="transparent" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      />
+      <path class="finger-crease" d="M 318,265 Q 334,275 352,260" fill="none" stroke="#C57E4E" stroke-width="1.6" stroke-linecap="round" opacity="0.45" />
+
+      <path class="finger-nail" d="
+        M 342,238
+        C 344,226 353,222 362,231
+        C 368,241 364,251 354,255
+        C 348,258 340,249 342,238 Z"
+        fill="url(#nail-real-r)"
+        stroke="#E69CAE"
+        stroke-width="1"
+      />
+      <path class="nail-shine" d="M 348,230 Q 355,228 361,234" fill="none" stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity="0.85" />
+
+      <circle class="finger-pad" cx="354" cy="238" r="14" />
+      <circle class="finger-pulse-ring" cx="354" cy="238" r="16" />
+    </g>
+
+  </g>
+</svg>
+          </div>
+        </div>
+        </div>
+      </section>
+      </main>
+    </div>
+
+    <!-- Pantalla inicial con Roby -->
+    <div id="start-screen" class="start-screen">
+        <div class="start-box">
+          <div class="start-mascot-header">
+            <img class="start-mascot-img mascot-bounce" src="assets/robot_happy.png" alt="Roby saludando alegremente" />
+            <div class="start-mascot-dialogue">
+              <div class="dialogue-name-row">
+                <p class="dialogue-name">¡Hola, supermecanógrafo/a!</p>
+                <span id="start-roby-rank" class="roby-rank-tag">🥋 Cinturón Blanco</span>
+              </div>
+              <p class="dialogue-speech">Soy <strong>Roby</strong>, tu compañero de aventuras. ¡Aprenderemos a teclear como magos jugando!</p>
+            </div>
+          </div>
+
+          <h1>Mecano Aventura 🚀</h1>
+          <p class="start-subtitle">Elige tu nivel en el mapa y prepárate para divertirte:</p>
+
+          <!-- 🗺️ Mapa de Mundos Interactivo -->
+          <div class="levels-map-container" id="levels-map-container">
+            <div class="levels-map-header">
+              <span class="map-title">🗺️ Mapa de Aventuras</span>
+              <span class="map-stars-badge">⭐ <span id="total-stars-count">0</span> / 24 estrellas</span>
+            </div>
+            <div class="levels-map-grid" id="levels-map-grid" role="group" aria-label="Selector de niveles interactivo">
+              <!-- Casillas de niveles generadas dinámicamente con candados y estrellas -->
+            </div>
+          </div>
+
+          <!-- Select oculto sincronizado para compatibilidad -->
+          <select id="start-difficulty-select" class="difficulty-select hidden" aria-hidden="true">
+            <option value="1-indices">1 - 🎯 Los Índices en Casa (F y J)</option>
+            <option value="2-filaguia">2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)</option>
+            <option value="3-vocales-ei">3 - ✨ Vocales E/I y Primeras Palabras</option>
+            <option value="4-expansion">4 - 🍎 Vocales O/U y Letras (C, M, P, T)</option>
+            <option value="5-frases">5 - 🌟 Frases Cortas y Barra Espaciadora</option>
+            <option value="6-cuentos">6 - 🏰 El Reino de los Cuentos y Aventuras</option>
+            <option value="7-chistes">7 - 😂 Club de Chistes y Trabalenguas</option>
+            <option value="8-galaxia">8 - 🐉 Desafío Galáctico del Dragón Robot</option>
+          </select>
+
+          <div id="start-difficulty-description" class="difficulty-description"></div>
+
+          <div class="start-options-row">
+            <div class="start-keyboard-wrap">
+              <label for="start-keyboard-select">Teclado en pantalla</label>
+              <select id="start-keyboard-select" class="difficulty-select">
+                <option value="infantil">Infantil (Solo letras)</option>
+                <option value="completo" selected>Completo (Todo)</option>
+              </select>
+            </div>
+            <button id="reset-progress-btn" class="reset-progress-link" type="button" title="Reiniciar todas las estrellas y volver a empezar">🔄 Reiniciar Progreso</button>
+          </div>
+
+          <button id="start-game-btn" class="start-game-btn pulse-button">¡Empezar Aventura! 🎮</button>
+        </div>
+      </div>
+
+      <!-- Panel de opciones -->
+      <div id="settings-panel" class="settings-panel hidden">
+        <div class="settings-box">
+          <div class="settings-header">
+            <h2>⚙️ Opciones</h2>
+            <button id="close-settings-btn" class="close-settings-btn">✖</button>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-row">
+              <span>Efectos de Sonido</span>
+              <button id="sound-toggle" class="option-btn">ON</button>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-row">
+              <span>Voz de Roby (Lectura) 🗣️</span>
+              <button id="voice-toggle" class="option-btn">OFF</button>
+            </label>
+          </div>
+
+          <div class="settings-group" id="voice-selection-group">
+            <label for="voice-select">Tipo de Voz en Español</label>
+            <div class="voice-picker-row">
+              <select id="voice-select" class="difficulty-select">
+                <option value="auto">Selección Automática (Más Natural)</option>
+              </select>
+              <button id="test-voice-btn" class="test-voice-btn" type="button" title="Probar esta voz">🔊 Probar</button>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <label class="settings-row">
+              <span>Animación de fondo</span>
+              <button id="animation-toggle" class="option-btn">ON</button>
+            </label>
+          </div>
+
+          <div class="settings-group">
+            <label for="difficulty-select">Mundo / Nivel</label>
+            <select id="difficulty-select" class="difficulty-select">
+              <option value="1-indices">1 - 🎯 Los Índices en Casa (F y J)</option>
+              <option value="2-filaguia">2 - 🏠 La Fila Guía Básica (A S D F / J K L Ñ)</option>
+              <option value="3-vocales-ei">3 - ✨ Vocales E/I y Primeras Palabras</option>
+              <option value="4-expansion">4 - 🍎 Vocales O/U y Letras (C, M, P, T)</option>
+              <option value="5-frases">5 - 🌟 Frases Cortas y Barra Espaciadora</option>
+              <option value="6-cuentos">6 - 🏰 El Reino de los Cuentos y Aventuras</option>
+              <option value="7-chistes">7 - 😂 Club de Chistes y Trabalenguas</option>
+              <option value="8-galaxia">8 - 🐉 Desafío Galáctico del Dragón Robot</option>
+            </select>
+
+            <div id="difficulty-description" class="difficulty-description"></div>
+          </div>
+
+          <div class="settings-group" id="accessibility-group">
+            <label for="accessibility-text-size">👁️ Tamaño de Letra y Zoom (Accesibilidad)</label>
+            <select id="accessibility-text-size" class="difficulty-select">
+              <option value="normal">Normal (100%)</option>
+              <option value="grande">Grande (125% - Para baja visión)</option>
+              <option value="extra">Extra Grande (150% - Dificultad visual)</option>
+            </select>
+          </div>
+
+          <div class="settings-group">
+            <label for="keyboard-select">Tipo de Teclado</label>
+            <select id="keyboard-select" class="difficulty-select">
+              <option value="infantil">Infantil (Solo letras)</option>
+              <option value="completo" selected>Completo (Todo)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nivel completado -->
+      <div id="level-complete" class="level-complete hidden" aria-live="polite">
+        <div class="level-complete-box">
+          <div class="celebrate-avatar-wrap">
+            <img id="level-complete-avatar" class="celebrate-avatar mascot-bounce" src="assets/mascot/mascot_streak.png" alt="Roby celebrando" />
+            <img id="trophy-badge" class="celebrate-trophy mascot-bounce" src="assets/kids_gold_trophy.png" alt="Trofeo de oro de super campeón" />
+          </div>
+          <div class="stars-rating" id="stars-rating">
+            <span class="star filled">⭐</span>
+            <span class="star filled">⭐</span>
+            <span class="star filled">⭐</span>
+          </div>
+          <h2 id="level-complete-title">¡Misión Cumplida! 🎉</h2>
+          <div id="level-complete-message" class="level-complete-message">
+            ¡Sensacional! Has completado esta lección con éxito.
+          </div>
+          <div class="level-complete-stats-summary" id="level-complete-stats-summary"></div>
+          <div class="level-complete-mascot-speech" id="level-complete-mascot-speech">
+            "¡Eres un as del teclado! ¡Cada día escribes más rápido y mejor!"
+          </div>
+          <div class="level-complete-buttons">
+            <button id="retry-level-btn" class="pulse-button hidden">¡Reintentar Desafío! 🔄</button>
+            <button id="next-level-btn" class="pulse-button">¡Siguiente Aventura! 🚀</button>
+          </div>
+          <div class="level-complete-key-cue">💡 Pulsa <strong>[Espacio]</strong> o <strong>[Enter]</strong> para continuar ⌨️</div>
+        </div>
+      </div>
+
+      <!-- Modal Examen de Nivel -->
+      <div id="exam-modal" class="exam-modal hidden" aria-live="polite">
+        <div class="exam-modal-box">
+          <div class="exam-modal-header">
+            <span class="exam-badge-icon" id="exam-badge-icon">🏅</span>
+            <h2 id="exam-modal-title">Resultado del Examen</h2>
+          </div>
+          <div class="exam-stars-rating" id="exam-stars-rating">
+            <span class="star filled">⭐</span>
+            <span class="star filled">⭐</span>
+            <span class="star filled">⭐</span>
+          </div>
+          <div id="exam-modal-message" class="exam-modal-message"></div>
+          <div class="exam-modal-stats" id="exam-modal-stats"></div>
+          <div class="exam-modal-speech" id="exam-modal-speech"></div>
+          <div class="exam-modal-actions">
+            <button id="exam-retry-btn" class="pulse-button">🔄 Reintentar Examen</button>
+            <button id="exam-review-lessons-btn" class="header-tool-btn">📚 Repasar Lecciones</button>
+            <button id="exam-view-diploma-btn" class="pulse-button diploma-gold-btn hidden">🎓 Ver Mi Título Oficial</button>
+            <button id="exam-next-level-btn" class="pulse-button">¡Siguiente Nivel! 🚀</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Vídeo Explicativo de Lección -->
+      <div id="video-intro-modal" class="video-intro-modal hidden" aria-live="polite">
+        <div class="video-intro-card">
+          <div class="video-intro-header">
+            <div class="video-intro-title-group">
+              <span class="video-intro-badge">🎬 VÍDEO EXPLICATIVO</span>
+              <h3 id="video-intro-title">Lección: Cómo colocar los dedos</h3>
+            </div>
+            <button id="video-intro-close-btn" class="close-settings-btn" title="Cerrar y empezar">✖</button>
+          </div>
+          <div class="video-player-wrapper">
+            <video id="video-intro-player" playsinline controls preload="metadata"></video>
+            <div id="video-intro-placeholder" class="video-placeholder hidden">
+              <div class="video-placeholder-icon">🤖📹</div>
+              <h4 id="video-placeholder-heading">¡Vídeo en Preparación!</h4>
+              <p id="video-placeholder-text">Añade tu clip MP4 a la carpeta <code>assets/videos/</code> para reproducirlo aquí.</p>
+              <div id="video-placeholder-tip" class="video-placeholder-tip">💡 Pulsa el botón de abajo para empezar la lección ahora mismo.</div>
+            </div>
+          </div>
+          <div class="video-intro-footer">
+            <button id="video-intro-skip-btn" class="pulse-button video-start-btn">¡Empezar a Escribir! 🚀 (Enter / Espacio)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Título / Diploma Oficial de Mecanografía -->
+      <div id="diploma-modal" class="diploma-modal hidden" role="dialog" aria-modal="true" aria-label="Título Oficial de Mecanografía">
+        <div class="diploma-modal-backdrop" id="diploma-modal-backdrop"></div>
+        <div class="diploma-modal-box">
+          <div class="diploma-modal-topbar">
+            <div class="diploma-topbar-title">
+              <span class="diploma-topbar-icon">🎓</span>
+              <h2>Título Oficial de Mecanografía</h2>
+            </div>
+            <button id="diploma-close-btn" class="close-settings-btn" title="Cerrar ventana">✖</button>
+          </div>
+
+          <div class="diploma-name-editor">
+            <label for="diploma-student-name">Nombre del alumno/a:</label>
+            <div class="diploma-name-input-group">
+              <input type="text" id="diploma-student-name" class="diploma-input" placeholder="Escribe tu nombre y apellidos" maxlength="35" value="Campeón/a del Teclado" />
+              <button id="diploma-save-name-btn" class="header-tool-btn">💾 Guardar Nombre</button>
+            </div>
+          </div>
+
+          <div class="diploma-canvas-wrapper" id="diploma-canvas-wrapper">
+            <canvas id="diploma-canvas" class="diploma-canvas" width="1920" height="1080"></canvas>
+          </div>
+
+          <div class="diploma-modal-footer">
+            <button id="diploma-print-btn" class="diploma-btn pulse-button">🖨️ Imprimir Diploma</button>
+            <button id="diploma-download-btn" class="diploma-btn diploma-btn-secondary">📥 Descargar Diploma (PNG)</button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+
+  <script defer src="bundle.js"></script>
+</body>
+</html>
